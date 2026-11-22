@@ -310,6 +310,11 @@ header('Referrer-Policy: strict-origin-when-cross-origin');
         <div class="bento">
             <article class="card card-xl spot" data-tilt data-card style="--c:var(--s5)">
                 <div class="card-tag">01</div>
+                <div class="iso" aria-hidden="true">
+                    <div class="iso-l iso-db"><b>SQL Server</b><span class="iso-rows"><i></i><i></i><i></i><i></i></span></div>
+                    <div class="iso-l iso-api"><b>API · .NET</b><span class="iso-ep"><em>GET</em>/courses</span><span class="iso-ep"><em>POST</em>/enroll</span></div>
+                    <div class="iso-l iso-ui"><b>UI</b><span class="iso-kpi"><i></i><i></i><i></i></span><span class="iso-chart"><i></i><i></i><i></i><i></i><i></i><i></i></span></div>
+                </div>
                 <h3><?= $s('svc.app.t') ?></h3>
                 <p><?= $s('svc.app.d') ?></p>
                 <div class="code-win" aria-hidden="true">

@@ -314,13 +314,13 @@ float map(vec3 p){float t=uT*.45;
  d=smin(d,length(p-vec3(uM.x*1.6,uM.y*1.1,.45))-.3,.75);
  d+=sin(p.x*4.+t*2.)*sin(p.y*4.+t*1.7)*sin(p.z*4.+t)*.035;
  return d;}
-vec3 nrm(vec3 p){vec2 e=vec2(.0025,0.);return normalize(vec3(map(p+e.xyy)-map(p-e.xyy),map(p+e.yxy)-map(p-e.yxy),map(p+e.yyx)-map(p-e.yyx)));}
+vec3 nrm(vec3 p){const vec2 k=vec2(1.,-1.);float h=.0025;return normalize(k.xyy*map(p+k.xyy*h)+k.yyx*map(p+k.yyx*h)+k.yxy*map(p+k.yxy*h)+k.xxx*map(p+k.xxx*h));}
 vec3 pal(float t){return .5+.5*cos(6.28318*(t+vec3(0.,.33,.67)));}
 void main(){
  vec2 uv=(gl_FragCoord.xy-.5*uRes)/uRes.y; uv.x-=uOff; uv.y+=uY-uScroll*.6;
  vec3 ro=vec3(0.,0.,3.3*uZoom),rd=normalize(vec3(uv,-1.65));
  float t=0.,d=1.,glow=0.,md=9.,mt=0.;bool hit=false;
- for(int i=0;i<72;i++){vec3 p=ro+rd*t;d=map(p);glow+=.012/(.04+d*d*6.);if(d<md){md=d;mt=t;}if(d<.0015){hit=true;break;}t+=d*.9;if(t>8.)break;}
+ for(int i=0;i<60;i++){vec3 p=ro+rd*t;d=map(p);glow+=.012/(.04+d*d*6.);if(d<md){md=d;mt=t;}if(d<.0015){hit=true;break;}t+=d*.9;if(t>8.)break;}
  vec3 col=vec3(0.);float a=0.;
  float edge=hit?1.:1.-smoothstep(.0,.045*uZoom,md);
  if(edge>0.){if(!hit)t=mt;vec3 p=ro+rd*t;vec3 n=nrm(p);float fr=pow(1.-max(dot(n,-rd),0.),2.2);
@@ -338,17 +338,28 @@ void main(){
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
     const loc = gl.getAttribLocation(prog, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
     const U = Object.fromEntries(['uRes', 'uT', 'uM', 'uOff', 'uScroll', 'uLight', 'uZoom', 'uY'].map((n) => [n, gl.getUniformLocation(prog, n)]));
-    const scale = mobile ? 0.55 : 0.7;
+    let scale = mobile ? 0.5 : 0.65;   // adaptive: lowered automatically if the GPU can't keep 60 fps
+    const minScale = 0.32;
     const resize = () => {
         const w = canvas.clientWidth, h = canvas.clientHeight, dpr = Math.min(devicePixelRatio, 1.5) * scale;
         canvas.width = Math.max(1, Math.round(w * dpr)); canvas.height = Math.max(1, Math.round(h * dpr));
         gl.viewport(0, 0, canvas.width, canvas.height);
     };
     resize(); addEventListener('resize', resize);
-    let m = { x: 0.3, y: 0.1 }, t0 = performance.now(), raf = 0, frames = 0, slowStart = performance.now();
+    let m = { x: 0.3, y: 0.1 }, t0 = performance.now(), raf = 0, last = 0, acc = 0, cnt = 0, slowAtMin = 0;
     const frame = (now) => {
         raf = 0;
-        if (!heroVisible || document.hidden) return;
+        if (!heroVisible || document.hidden) { last = 0; return; }
+        // frame-time watchdog: average over 30 frames, lower the render resolution instead of stuttering
+        if (last) { const dt = now - last; if (dt < 250) { acc += dt; cnt++; } }
+        last = now;
+        if (cnt === 30) {
+            const avg = acc / cnt; acc = 0; cnt = 0;
+            if (avg > 19 && scale > minScale) { scale = Math.max(minScale, scale * 0.8); resize(); }
+            else if (avg > 30 && scale <= minScale && ++slowAtMin >= 3 && location.hash !== '#gl') {
+                canvas.classList.add('is-out'); root.classList.add('no-webgl'); setTimeout(() => canvas.remove(), 900); return;
+            }
+        }
         m.x = lerp(m.x, mouse.nx, 0.05); m.y = lerp(m.y, mouse.ny, 0.05);
         const off = innerWidth > 1100 ? 0.55 : innerWidth > 760 ? 0.3 : 0.2;
         gl.uniform1f(U.uY, innerWidth > 1100 ? 0.02 : innerWidth > 760 ? 0.12 : 0.42);
@@ -360,9 +371,6 @@ void main(){
         gl.uniform1f(U.uScroll, clamp(scrollY / innerHeight, 0, 1.5));
         gl.uniform1f(U.uLight, root.dataset.theme === 'light' ? 1 : 0);
         gl.drawArrays(gl.TRIANGLES, 0, 3);
-        // too slow on this device (< 24 fps over the first 2 s): fall back to the CSS version
-        frames++;
-        if (frames === 60 && now - slowStart > 2500 && location.hash !== '#gl') { root.classList.add('no-webgl'); canvas.remove(); return; }
         raf = requestAnimationFrame(frame);
     };
     const start = () => { if (!raf) raf = requestAnimationFrame(frame); };
@@ -429,7 +437,7 @@ async function animations() {
     $$('.eq').forEach((g) => gsap.fromTo($$('em', g), { '--p': 0 }, { '--p': 1, duration: 1.4, ease: 'expo.out', stagger: 0.05, scrollTrigger: { trigger: g, start: 'top 88%' } }));
     // footer columns rise in
     gsap.from('.ft-grid > *', { y: 40, opacity: 0, duration: 1, ease: 'expo.out', stagger: 0.08, scrollTrigger: { trigger: '.ft', start: 'top 90%' } });
-    ScrollTrigger.refresh();
+    ScrollTrigger.sort(); ScrollTrigger.refresh();
 }
 intro().then(animations).catch((e) => { console.error(e); root.classList.replace('motion', 'no-motion'); $('.loader')?.remove(); });
 
@@ -451,7 +459,7 @@ function scroll3d() {
         const col = i === 0 ? -1 : ((i + 1) % 4) - 1.5;
         gsap.fromTo(card, { '--sz': '-900px', '--srx': '62deg', '--sry': `${col * 22}deg`, '--sy': '160px', opacity: 0 },
             { '--sz': '0px', '--srx': '0deg', '--sry': '0deg', '--sy': '0px', opacity: 1, ease: 'power2.out',
-              scrollTrigger: { trigger: card, start: 'top 110%', end: 'top 50%', scrub: 1 } });
+              scrollTrigger: { trigger: card, start: 'top 115%', end: 'top 40%', scrub: 1 } });
     });
     // EduVerse: extruded title and app rig rotate with the scroll
     const ex = $('[data-ex3d]');
@@ -463,7 +471,7 @@ function scroll3d() {
     if (show && stage?._setPos && wide) {
         const n = stage._count;
         stage.classList.add('is-scrub');
-        const st = ScrollTrigger.create({ trigger: show, pin: true, start: 'center center', end: () => '+=' + innerHeight * 0.55 * Math.max(1, n - 1), scrub: 0.6,
+        const st = ScrollTrigger.create({ trigger: show, pin: true, refreshPriority: 10, start: 'center center', end: () => '+=' + innerHeight * 0.55 * Math.max(1, n - 1), scrub: 0.6,
             snap: n > 1 ? { snapTo: 1 / (n - 1), duration: { min: 0.25, max: 0.6 }, delay: 0.12, ease: 'power2.inOut' } : false,
             onUpdate: (self) => stage._setPos(self.progress * (n - 1)) });
         stage._goto = (i) => { const y = st.start + (st.end - st.start) * (i / Math.max(1, n - 1)); lenis ? lenis.scrollTo(y, { duration: 1.1 }) : scrollTo({ top: y, behavior: 'smooth' }); };
