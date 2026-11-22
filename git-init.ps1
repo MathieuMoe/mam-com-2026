@@ -1,5 +1,5 @@
 # ==========================================================================
-# mam-com-2026 — create the Git repository and publish it on GitHub
+# mam-com-2026 - create the Git repository and publish it on GitHub
 # Run in PowerShell:  cd C:\Users\Mathieu\_WEB\mam-com.com\www ; .\git-init.ps1
 # ==========================================================================
 $ErrorActionPreference = "Stop"
@@ -16,7 +16,7 @@ git commit -m "mam-com.com 2026: Spectrum redesign (WebGL, 3D CSS, AI assistant)
 
 # 3) Create the GitHub repository and push
 #    With GitHub CLI (https://cli.github.com, then once: gh auth login):
-gh repo create MathieuMoe/mam-com-2026 --private --source . --remote origin --push --description "Portfolio mam-com.com — design × code × AI (FR/EN/ES)"
+gh repo create MathieuMoe/mam-com-2026 --private --source . --remote origin --push --description "Portfolio mam-com.com - design x code x AI (FR/EN/ES)"
 
 #    Without GitHub CLI: create an EMPTY repo "mam-com-2026" on https://github.com/new, then run instead:
 #    git remote add origin https://github.com/MathieuMoe/mam-com-2026.git
