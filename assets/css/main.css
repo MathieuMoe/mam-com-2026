@@ -387,15 +387,15 @@ kbd { font: 600 .72em var(--mono); padding: .1em .45em; border-radius: 6px; bord
 .nb-stack span { border-color: var(--line-2); }
 .nb-show { position: relative; }
 .nb-stage.is-scrub .nb-shot { transition: opacity .3s, filter .3s; }
-.nb-stage { position: relative; height: clamp(300px, 46vw, 620px); perspective: 1800px; transform-style: preserve-3d; touch-action: pan-y; cursor: grab; outline: none; }
+.nb-stage { position: relative; height: clamp(280px, 40vw, 560px); perspective: 1800px; touch-action: pan-y; cursor: grab; outline: none; }
 .nb-stage:active { cursor: grabbing; }
-.nb-shot { position: absolute; left: 50%; top: 0; width: min(900px, 74vw); margin: 0 0 0 calc(min(900px, 74vw) / -2); transition: transform 1s var(--ease), opacity .8s, filter .8s; transform-style: preserve-3d; will-change: transform; }
+.nb-shot { position: absolute; left: 50%; top: 50%; width: min(980px, 76vw); margin: 0 0 0 calc(min(980px, 76vw) / -2); translate: 0 -55%; transition: transform 1s var(--ease), opacity .8s, filter .8s; will-change: transform; backface-visibility: hidden; }
 .nb-frame { border-radius: 18px; overflow: hidden; background: #fff; box-shadow: 0 60px 100px -50px #000, 0 0 0 1px var(--line-2); }
 .nb-shot.is-front .nb-frame { box-shadow: 0 70px 120px -50px color-mix(in oklab, var(--s7) 60%, #000), 0 0 0 1px var(--line-2); }
 .nb-bar { display: flex; align-items: center; gap: 6px; padding: .55rem .9rem; background: #ecebf1; font: .7rem var(--mono); color: #6d6880; }
 .nb-bar i { width: 10px; height: 10px; border-radius: 50%; background: var(--s1); } .nb-bar i:nth-child(2) { background: var(--s3); } .nb-bar i:nth-child(3) { background: var(--s4); }
 .nb-bar span { margin: 0 auto; padding: .15rem .9rem; border-radius: 99px; background: #fff; }
-.nb-shot img { display: block; width: 100%; height: auto; aspect-ratio: 16 / 10; object-fit: cover; object-position: top; pointer-events: none; }
+.nb-shot img { display: block; width: 100%; height: auto; aspect-ratio: 1536 / 695; object-fit: cover; object-position: left top; background: #f6f7fb; pointer-events: none; }
 .nb-shot.is-front img { cursor: zoom-in; pointer-events: auto; }
 .nb-shot figcaption { margin-top: 1rem; text-align: center; font-weight: 600; opacity: 0; transition: opacity .5s; }
 .nb-shot.is-front figcaption { opacity: 1; }

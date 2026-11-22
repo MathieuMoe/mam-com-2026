@@ -464,6 +464,7 @@ function scroll3d() {
         const n = stage._count;
         stage.classList.add('is-scrub');
         const st = ScrollTrigger.create({ trigger: show, pin: true, start: 'center center', end: () => '+=' + innerHeight * 0.55 * Math.max(1, n - 1), scrub: 0.6,
+            snap: n > 1 ? { snapTo: 1 / (n - 1), duration: { min: 0.25, max: 0.6 }, delay: 0.12, ease: 'power2.inOut' } : false,
             onUpdate: (self) => stage._setPos(self.progress * (n - 1)) });
         stage._goto = (i) => { const y = st.start + (st.end - st.start) * (i / Math.max(1, n - 1)); lenis ? lenis.scrollTo(y, { duration: 1.1 }) : scrollTo({ top: y, behavior: 'smooth' }); };
     }
@@ -553,9 +554,9 @@ if (finePointer && !reduced) {
             const d = i - pos, a = Math.abs(d);
             el.classList.toggle('is-front', i === c);
             el.style.transform = `translateX(${d * Math.min(w * 0.36, 420)}px) translateZ(${-a * 260}px) rotateY(${clamp(-d * 32, -60, 60)}deg)`;
-            el.style.opacity = a > 2.4 ? '0' : String(1 - a * 0.22);
-            el.style.filter = a > 0.05 ? `brightness(${1 - Math.min(a, 2) * 0.25}) blur(${(Math.min(a, 2) * 0.6).toFixed(2)}px)` : '';
-            el.style.zIndex = String(20 - Math.round(a * 2));
+            el.style.opacity = a > 2.6 ? '0' : a > 1.6 ? String(1 - (a - 1.6)) : '1';   // solid cards, only the far ones fade
+            el.style.filter = a > 0.05 ? `brightness(${(1 - Math.min(a, 2) * 0.28).toFixed(3)}) saturate(${(1 - Math.min(a, 2) * 0.2).toFixed(3)})` : '';
+            el.style.zIndex = String(100 - Math.round(a * 20));   // the nearest card is always on top
         });
         dots.forEach((d, i) => d.toggleAttribute('aria-current', i === c));
     };
