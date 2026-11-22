@@ -81,3 +81,36 @@ h1 em { font-family: Georgia, serif; color: var(--lime); }
 .link-card { display: grid; gap: .9rem; }
 .login input { width: 100%; }
 code { font-family: "JetBrains", monospace; background: #ffffff12; padding: .1rem .35rem; border-radius: 5px; }
+/* full panel (merged v1 + v2) */
+.ok { background: #c8ff3d1f; border: 1px solid #c8ff3d55; padding: .6rem .9rem; border-radius: 10px; }
+.top-r { display: flex; align-items: center; gap: .8rem; color: var(--muted); font-size: .9rem; }
+.kpis .card span { display: block; color: var(--muted); font-size: .8rem; margin-top: .2rem; }
+.kpis .dark { background: var(--ink); color: var(--bg); } .kpis .dark small, .kpis .dark span { color: #55546a; }
+.grid2 { display: grid; grid-template-columns: 1.6fr 1fr; gap: 1rem; }
+.grid3 .wide2 { grid-column: span 2; }
+.chart2 { display: flex; align-items: flex-end; gap: 3px; height: 230px; padding-bottom: 18px; }
+.chart2 .col { position: relative; flex: 1; height: 100%; display: flex; flex-direction: column-reverse; gap: 1px; }
+.chart2 .col i { display: block; border-radius: 3px; } .chart2 .vn { background: var(--lime); } .chart2 .vo { background: #ffffff38; }
+.chart2 .col s { position: absolute; left: 15%; right: 15%; height: 3px; border-radius: 3px; background: var(--violet); }
+.chart2 .col em { position: absolute; bottom: -18px; left: 50%; translate: -50% 0; font: .62rem "JetBrains", monospace; font-style: normal; color: var(--muted); }
+.chart2 .col:hover i { filter: brightness(1.3); }
+.dot.vn { background: var(--lime); } .dot.vo { background: #ffffff38; } .dot.vu { background: var(--violet); }
+.funnel { display: flex; gap: .35rem; align-items: flex-end; height: 200px; }
+.funnel div { flex: 1; height: 100%; display: flex; flex-direction: column; justify-content: flex-end; align-items: center; gap: .3rem; min-width: 0; }
+.funnel i { display: block; width: 100%; min-height: 3px; border-radius: 8px 8px 3px 3px; background: linear-gradient(var(--lime), var(--violet)); }
+.funnel b { font: .75rem "JetBrains", monospace; } .funnel span { font-size: .62rem; color: var(--muted); writing-mode: vertical-rl; rotate: 180deg; height: 4.5rem; text-align: left; }
+.feed ul { list-style: none; padding: 0; max-height: 70vh; overflow: auto; }
+.feed li { display: flex; justify-content: space-between; gap: .8rem; padding: .5rem 0; border-bottom: 1px dashed var(--line); font-size: .88rem; }
+.feed small { color: var(--muted); } .feed time { font: .72rem "JetBrains", monospace; color: var(--muted); white-space: nowrap; }
+.add { display: grid; grid-template-columns: 2fr 1.2fr 1.4fr .9fr 2fr auto; gap: .5rem; align-items: center; }
+.urls { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; }
+.link-card .stats { display: flex; flex-wrap: wrap; gap: .35rem; }
+.link-card details summary { cursor: pointer; color: var(--muted); font-size: .88rem; }
+.link-card details form { display: grid; gap: .8rem; margin-top: .8rem; }
+.link-card .del { justify-self: end; }
+.msg .body { white-space: normal; line-height: 1.6; }
+.btn.sm { padding: .45rem .9rem; font-size: .82rem; }
+h1 small { font-size: .85rem; font-weight: 400; margin-left: .6rem; }
+@media (max-width: 1000px) { .grid2, .urls { grid-template-columns: 1fr; } .add { grid-template-columns: 1fr 1fr; } .grid3 .wide2 { grid-column: auto; } }
+.kpis { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+.kpis b { font-size: clamp(1.35rem, 1.9vw, 2rem); white-space: nowrap; }

@@ -249,8 +249,8 @@ kbd { font: 600 .72em var(--mono); padding: .1em .45em; border-radius: 6px; bord
 
 /* ---------- Hero ---------- */
 .hero { position: relative; min-height: 100svh; display: grid; padding: 7.5rem var(--pad) 2.2rem; overflow: hidden; isolation: isolate; }
-.hero-gl { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; transition: opacity .9s; }
-.hero-gl.is-out { opacity: 0; }
+.hero-gl { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; }
+.hero-gl.is-out { opacity: 0 !important; transition: opacity .9s; }
 .hero::after { content: ""; position: absolute; inset: auto 0 0; height: 30%; z-index: -1; background: linear-gradient(transparent, var(--bg)); pointer-events: none; }
 .hero-fallback { position: absolute; inset: 0; z-index: -2; display: none; filter: blur(60px); }
 .no-webgl .hero-fallback, .no-motion .hero-fallback { display: block; }
@@ -266,6 +266,8 @@ kbd { font: 600 .72em var(--mono); padding: .1em .45em; border-radius: 6px; bord
 .hero-meta { display: flex; flex-wrap: wrap; gap: .5rem 2rem; font: 500 .78rem var(--mono); text-transform: uppercase; letter-spacing: .08em; color: var(--soft); }
 .hero-meta b { color: var(--ink); }
 .hero-title { margin: auto 0; padding: 2.5rem 0 2rem; font-size: clamp(4.2rem, 16.5vw, 17.5rem); font-weight: 700; line-height: .8; letter-spacing: -.07em; }
+/* the liquid flows inside and around the letters: the name inverts where the blobs pass (dark theme) */
+:root:not([data-theme="light"]):not(.no-webgl) .hero-title { mix-blend-mode: difference; }
 .hero-line { display: block; overflow: hidden; padding-bottom: .05em; }
 .hero-line.indent { padding-left: 11vw; }
 .hl-in { display: inline-block; white-space: nowrap; }
@@ -298,7 +300,8 @@ kbd { font: 600 .72em var(--mono); padding: .1em .45em; border-radius: 6px; bord
 @keyframes drop { from { translate: 0 -100%; } to { translate: 0 100%; } }
 
 /* ---------- Marquee ---------- */
-.marquee { padding: 2.5rem 0; overflow: hidden; }
+.marquee { padding: 4.5rem 0; overflow: hidden; perspective: 1100px; perspective-origin: 50% 50%; }
+.marquee-row { transform: translate3d(0, var(--my, 0px), var(--mz, 0px)) rotateX(var(--mrx, 0deg)) rotateY(var(--mry, 0deg)); transform-origin: 50% 50%; will-change: transform; }
 .marquee-row { display: flex; overflow: hidden; padding: 1rem 0; rotate: -1.6deg; scale: 1.04; border-block: 1px solid var(--line-2); background: var(--bg-2); }
 .marquee-row.alt { rotate: 1.4deg; margin-top: -.6rem; background: var(--rainbow); background-size: 200% 100%; animation: slide 10s linear infinite; color: #111; border: 0; }
 .marquee-track { display: flex; flex-shrink: 0; align-items: center; gap: 2rem; padding-right: 2rem; font-size: clamp(1.6rem, 4vw, 3.1rem); font-weight: 700; letter-spacing: -.03em; white-space: nowrap; will-change: transform; }

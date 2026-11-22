@@ -89,7 +89,7 @@ const openMenu = () => {
     setCyl(Math.max(0, menuItems.findIndex((a) => a.getAttribute('href') === `#${activeSection}`)));
     if (motion) {
         gsap.fromTo(menuItems, { yPercent: 110, rotateX: -80, opacity: 0 }, { yPercent: 0, rotateX: 0, opacity: 1, duration: 1, ease: 'expo.out', stagger: 0.045, delay: 0.15 });
-        gsap.fromTo('.menu-cyl', { scale: 0.6, opacity: 0, rotateZ: -10 }, { scale: 1, opacity: 1, rotateZ: 0, duration: 1.3, ease: 'expo.out', delay: 0.2 });
+        gsap.fromTo('.menu-stage', { scale: 0.6, opacity: 0, rotateZ: -10 }, { scale: 1, opacity: 1, rotateZ: 0, duration: 1.3, ease: 'expo.out', delay: 0.2, clearProps: 'transform,translate,rotate,scale,opacity' });   // animate the stage, never the cylinder (its transform holds the hover rotation)
         gsap.fromTo('.menu-foot > *', { y: 20, opacity: 0 }, { y: 0, opacity: 1, stagger: 0.05, duration: 0.8, ease: 'expo.out', delay: 0.4 });
     }
     setTimeout(() => menuItems[0]?.focus({ preventScroll: true }), 400);
@@ -320,15 +320,15 @@ void main(){
  vec2 uv=(gl_FragCoord.xy-.5*uRes)/uRes.y; uv.x-=uOff; uv.y+=uY-uScroll*.6;
  vec3 ro=vec3(0.,0.,3.3*uZoom),rd=normalize(vec3(uv,-1.65));
  float t=0.,d=1.,glow=0.,md=9.,mt=0.;bool hit=false;
- for(int i=0;i<60;i++){vec3 p=ro+rd*t;d=map(p);glow+=.012/(.04+d*d*6.);if(d<md){md=d;mt=t;}if(d<.0015){hit=true;break;}t+=d*.9;if(t>8.)break;}
+ for(int i=0;i<72;i++){vec3 p=ro+rd*t;d=map(p);glow+=.012/(.04+d*d*6.);if(d<md){md=d;mt=t;}if(d<.0015){hit=true;break;}t+=d*.9;if(t>8.)break;}
  vec3 col=vec3(0.);float a=0.;
  float edge=hit?1.:1.-smoothstep(.0,.045*uZoom,md);
  if(edge>0.){if(!hit)t=mt;vec3 p=ro+rd*t;vec3 n=nrm(p);float fr=pow(1.-max(dot(n,-rd),0.),2.2);
   vec3 iri=pal(dot(n,vec3(.35,.6,.25))*1.1+fr*.9+uT*.04+p.y*.25);
   vec3 l=normalize(vec3(.6,.8,.6));float dif=max(dot(n,l),0.);float sp=pow(max(dot(reflect(-l,n),-rd),0.),48.);
   vec3 env=pal(reflect(rd,n).y*.5+uT*.05+.2);
-  col=mix(iri*(.32+.7*dif),env,.25+fr*.35)+sp*1.1;col=mix(col,col*1.08+.04,uLight);a=edge;col*=edge;}
- vec3 g=pal(uT*.05+uv.y*.6+uv.x*.2)*min(glow,6.)*.045;col+=g*(1.-a);a=max(a,clamp(glow*.03,0.,.55)*(1.-uLight*.4));
+  col=mix(iri*(.5+.7*dif),env*1.05,.22+fr*.45)+sp*1.15;col=pow(col,vec3(.9));col=mix(col,col*1.08+.04,uLight);a=edge;col*=edge;}
+ vec3 g=pal(uT*.05+uv.y*.6+uv.x*.2)*min(glow,6.)*.065;col+=g*(1.-a);a=max(a,clamp(glow*.03,0.,.55)*(1.-uLight*.4));
  gl_FragColor=vec4(col,a);}`;
     const sh = (type, src) => { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s)); return s; };
     let prog;
@@ -338,11 +338,13 @@ void main(){
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
     const loc = gl.getAttribLocation(prog, 'p'); gl.enableVertexAttribArray(loc); gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
     const U = Object.fromEntries(['uRes', 'uT', 'uM', 'uOff', 'uScroll', 'uLight', 'uZoom', 'uY'].map((n) => [n, gl.getUniformLocation(prog, n)]));
-    let scale = mobile ? 0.5 : 0.65;   // adaptive: lowered automatically if the GPU can't keep 60 fps
-    const minScale = 0.32;
+    let scale = mobile ? 0.6 : 0.8;   // adaptive: lowered automatically if the GPU can't keep 60 fps
+    const minScale = 0.42, warm = performance.now() + 3000;   // ignore the first 3 s (intro is busy)
     const resize = () => {
+        // the blobs are soft: render at a capped internal size (≈ 900 px wide max) and let CSS upscale it
         const w = canvas.clientWidth, h = canvas.clientHeight, dpr = Math.min(devicePixelRatio, 1.5) * scale;
-        canvas.width = Math.max(1, Math.round(w * dpr)); canvas.height = Math.max(1, Math.round(h * dpr));
+        const k = Math.min(dpr, 900 / Math.max(1, w));
+        canvas.width = Math.max(1, Math.round(w * k)); canvas.height = Math.max(1, Math.round(h * k));
         gl.viewport(0, 0, canvas.width, canvas.height);
     };
     resize(); addEventListener('resize', resize);
@@ -350,20 +352,21 @@ void main(){
     const frame = (now) => {
         raf = 0;
         if (!heroVisible || document.hidden) { last = 0; return; }
+        if (menuOpen) { last = 0; raf = requestAnimationFrame(frame); return; }   // menu covers the hero: free the GPU for its 3D
         // frame-time watchdog: average over 30 frames, lower the render resolution instead of stuttering
-        if (last) { const dt = now - last; if (dt < 250) { acc += dt; cnt++; } }
+        if (last && now > warm) { const dt = now - last; if (dt < 250) { acc += dt; cnt++; } }
         last = now;
         if (cnt === 30) {
             const avg = acc / cnt; acc = 0; cnt = 0;
-            if (avg > 19 && scale > minScale) { scale = Math.max(minScale, scale * 0.8); resize(); }
+            if (avg > 22 && scale > minScale) { scale = Math.max(minScale, scale * 0.85); resize(); }
             else if (avg > 30 && scale <= minScale && ++slowAtMin >= 3 && location.hash !== '#gl') {
                 canvas.classList.add('is-out'); root.classList.add('no-webgl'); setTimeout(() => canvas.remove(), 900); return;
             }
         }
         m.x = lerp(m.x, mouse.nx, 0.05); m.y = lerp(m.y, mouse.ny, 0.05);
-        const off = innerWidth > 1100 ? 0.55 : innerWidth > 760 ? 0.3 : 0.2;
-        gl.uniform1f(U.uY, innerWidth > 1100 ? 0.02 : innerWidth > 760 ? 0.12 : 0.42);
-        gl.uniform1f(U.uZoom, innerWidth > 1100 ? 1.28 : innerWidth > 760 ? 1.45 : 2.1);
+        const off = innerWidth > 1100 ? 0.12 : innerWidth > 760 ? 0.1 : 0.05;
+        gl.uniform1f(U.uY, innerWidth > 1100 ? -0.02 : innerWidth > 760 ? 0.08 : 0.3);
+        gl.uniform1f(U.uZoom, innerWidth > 1100 ? 1.42 : innerWidth > 760 ? 1.55 : 2.1);
         gl.uniform2f(U.uRes, canvas.width, canvas.height);
         gl.uniform1f(U.uT, (now - t0) / 1000);
         gl.uniform2f(U.uM, m.x - off * 0.8, m.y);
@@ -429,6 +432,14 @@ async function animations() {
         return gsap.fromTo(tr, { xPercent: dir > 0 ? 0 : -33.333 }, { xPercent: dir > 0 ? -33.333 : 0, duration: 45, ease: 'none', repeat: -1 });
     });
     ScrollTrigger.create({ trigger: '.marquee', start: 'top bottom', end: 'bottom top', onUpdate: (s) => rows.forEach((tw) => gsap.to(tw, { timeScale: (1 + Math.min(6, Math.abs(s.getVelocity()) / 300)) * (s.direction || 1), duration: 0.3, overwrite: true })) });
+    // marquee: the two ribbons swing in 3D (opposite directions) as they cross the screen
+    if (wide) $$('.marquee-row').forEach((row, i) => {
+        const k = i ? -1 : 1;
+        gsap.timeline({ scrollTrigger: { trigger: '.marquee', start: 'top bottom', end: 'bottom top', scrub: 1 } })
+            .fromTo(row, { '--mrx': `${58 * k}deg`, '--mry': `${-16 * k}deg`, '--mz': '-260px', '--my': `${60 * k}px` },
+                         { '--mrx': '0deg', '--mry': '0deg', '--mz': '0px', '--my': '0px', ease: 'power2.out', duration: 1 })
+            .to(row, { '--mrx': `${-48 * k}deg`, '--mry': `${14 * k}deg`, '--mz': '-200px', '--my': `${-50 * k}px`, ease: 'power2.in', duration: 1 });
+    });
     stack3d();
     scroll3d();
     journey();

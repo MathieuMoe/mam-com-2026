@@ -1,7 +1,7 @@
 # Previous version of the site, kept at /old_v1-02/ (static page + its PHP API and admin panel).
 # The root .htaccess still applies: HTTPS, security headers, config.php/sql/md blocked.
 Options -Indexes
-DirectoryIndex index.html
+DirectoryIndex index.html index.php
 <IfModule mod_headers.c>
     Header set X-Robots-Tag "noindex, follow"
 </IfModule>
