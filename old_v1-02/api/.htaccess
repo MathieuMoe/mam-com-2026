@@ -1,0 +1,5 @@
+# Block direct access to configuration and helpers
+<FilesMatch "^(config|config\.sample|bootstrap)\.php$">
+  Require all denied
+</FilesMatch>
+Options -Indexes

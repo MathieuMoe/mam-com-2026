@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Mathieu Moreau — Développeur Full Stack .NET &amp; Designer UI/UX</title>
+  <meta name="description" content="Mathieu Moreau, développeur Full Stack .NET et designer UI/UX avec près de 20 ans d'expérience. Applications web, design d'interfaces, WordPress et intégration de l'IA. Français, anglais, espagnol.">
+  <meta name="author" content="Mathieu Moreau">
+  <meta name="robots" content="noindex, follow">
+  <link rel="canonical" href="https://mam-com.com/">
+  <meta name="theme-color" content="#F2EEE5">
+  <meta property="og:title" content="Mathieu Moreau — Full Stack .NET & UI/UX">
+  <meta property="og:description" content="De la maquette Figma au backend C#. Design, code et IA.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://mam-com.com/">
+  <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/style.css">
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"Person","name":"Mathieu Moreau","jobTitle":"Full Stack .NET Developer & UI/UX Designer","url":"https://mam-com.com","sameAs":["https://github.com/MathieuMoe","https://www.linkedin.com/in/mathieu-moreau-045b26114/"],"knowsLanguage":["fr","en","es"]}
+  </script>
+</head>
+<body>
+  <!-- ============ LOADER ============ -->
+  <div class="loader" id="loader" aria-hidden="true">
+    <div class="loader__count"><span id="loaderNum">0</span>%</div>
+    <div class="loader__name">Mathieu Moreau<em>— design × code</em></div>
+  </div>
+
+  <div class="progress" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+  <div class="cursor" aria-hidden="true"><span class="cursor__label"></span></div>
+  <div class="cursor-dot" aria-hidden="true"></div>
+
+  <!-- ============ NAV ============ -->
+  <header class="nav" data-label="header.nav">
+    <a href="#top" class="nav__logo magnetic" aria-label="Accueil">
+      <span class="logo-mark">M<i>m</i></span>
+    </a>
+    <nav class="nav__links" aria-label="Navigation principale">
+      <a href="#services" data-i18n="nav.services">Services</a>
+      <a href="#eduverse" data-i18n="nav.eduverse">EduVerse AI</a>
+      <a href="#work" data-i18n="nav.work">Réalisations</a>
+      <a href="#journey" data-i18n="nav.journey">Parcours</a>
+      <a href="#contact" data-i18n="nav.contact">Contact</a>
+    </nav>
+    <div class="nav__tools">
+      <span class="status-pill" title="Statut"><i></i><span data-i18n="nav.status">Disponible</span></span>
+      <div class="lang" role="group" aria-label="Langue">
+        <button data-lang="fr" class="is-active">FR</button>
+        <button data-lang="en">EN</button>
+        <button data-lang="es">ES</button>
+      </div>
+      <button class="icon-btn" id="modeToggle" title="Design / Code" aria-pressed="false">
+        <span class="mode-design">✦</span><span class="mode-code">&lt;/&gt;</span>
+      </button>
+      <button class="icon-btn" id="themeToggle" title="Thème" aria-label="Changer de thème">
+        <svg viewBox="0 0 24 24" width="18" height="18"><circle cx="12" cy="12" r="5" fill="currentColor"/><path d="M12 1v3M12 20v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M1 12h3M20 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+      </button>
+      <button class="icon-btn kbd-btn" id="paletteBtn" title="Ctrl + K">⌘K</button>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- ============ HERO ============ -->
+    <section class="hero" id="hero" data-label="section#hero">
+      <p class="hero__greet" id="greet" hidden></p>
+      <div class="hero__meta">
+        <span data-i18n="hero.meta1">Basé en France</span>
+        <span data-i18n="hero.meta2">Télétravail · Mobilité</span>
+        <span class="clock"><span data-i18n="hero.localtime">Heure locale</span> <b id="clock">--:--</b></span>
+      </div>
+
+      <h1 class="hero__title" aria-label="Mathieu Moreau">
+        <span class="hero__line" data-split>Mathieu</span>
+        <span class="hero__line hero__line--indent"><em class="serif">&amp;</em><span data-split>Moreau</span></span>
+      </h1>
+
+      <div class="hero__bottom">
+        <p class="hero__role">
+          <span data-i18n="hero.iam">Je suis</span>
+          <span class="typer" id="typer" aria-live="polite"></span><span class="caret">|</span>
+        </p>
+        <p class="hero__intro" data-i18n="hero.intro">Près de <b>20 ans</b> dans le web. Je conçois et développe des applications de bout en bout — <em class="serif">de la maquette Figma au backend C#</em>.</p>
+        <div class="hero__cta">
+          <a href="#contact" class="btn btn--primary magnetic" data-cursor="Go"><span data-i18n="hero.cta1">Travaillons ensemble</span> <span class="btn__arrow">→</span></a>
+          <a href="assets/docs/CV-Mathieu-Moreau-FR.pdf" class="btn btn--ghost magnetic" download data-track="cv_download" data-cursor="PDF"><span data-i18n="hero.cta2">Télécharger le CV</span> ↓</a>
+        </div>
+      </div>
+
+      <!-- Draggable stickers -->
+      <div class="stickers" aria-hidden="true">
+        <div class="sticker s1" data-drag style="--r:-8deg"><b>20</b><small data-i18n="sticker.years">ans d'xp</small></div>
+        <div class="sticker s2" data-drag style="--r:6deg">C# · .NET</div>
+        <div class="sticker s3" data-drag style="--r:-4deg">Figma ✦</div>
+        <div class="sticker s4" data-drag style="--r:10deg">🤖 IA</div>
+        <div class="sticker s5" data-drag style="--r:-12deg">FR · EN · ES</div>
+      </div>
+      <p class="hero__hint" data-i18n="hero.hint">↖ Les stickers se déplacent</p>
+      <a href="#manifesto" class="scroll-cue" aria-label="Défiler"><span></span></a>
+    </section>
+
+    <!-- ============ MARQUEE ============ -->
+    <section class="marquee" aria-label="Compétences" data-label="section.marquee">
+      <div class="marquee__row" data-speed="1">
+        <div class="marquee__track">
+          <span>C# / .NET</span><i>✦</i><span>ASP.NET MVC</span><i>✦</i><span>SQL Server</span><i>✦</i><span>UI/UX Design</span><i>✦</i><span>Figma</span><i>✦</i><span>JavaScript</span><i>✦</i><span>WordPress</span><i>✦</i><span>Docker</span><i>✦</i><span>Claude Code</span><i>✦</i>
+        </div>
+      </div>
+      <div class="marquee__row marquee__row--alt" data-speed="-1">
+        <div class="marquee__track">
+          <span class="serif">Design Thinking</span><i>●</i><span class="serif">Motion design</span><i>●</i><span class="serif">Photographie</span><i>●</i><span class="serif">Identité visuelle</span><i>●</i><span class="serif">PHP / Symfony</span><i>●</i><span class="serif">Prestashop</span><i>●</i><span class="serif">Git / GitHub</span><i>●</i><span class="serif">IA générative</span><i>●</i>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ MANIFESTO ============ -->
+    <section class="manifesto" id="manifesto" data-label="section#manifesto">
+      <p class="eyebrow"><span>01</span> <span data-i18n="manifesto.eyebrow">Approche</span></p>
+      <p class="manifesto__text" data-words data-i18n="manifesto.text">Je suis designer et développeur à la fois. Cette double compétence me permet de livrer des produits techniquement solides et simples à utiliser — sans perte entre la maquette et le code.</p>
+      <div class="stats">
+        <div class="stat"><b data-count="20">0</b><span data-i18n="stats.years">années d'expérience web</span></div>
+        <div class="stat"><b data-count="3">0</b><span data-i18n="stats.langs">langues de travail</span></div>
+        <div class="stat"><b data-count="2">0</b><span data-i18n="stats.countries">marchés : France &amp; Espagne</span></div>
+        <div class="stat"><b>∞</b><span data-i18n="stats.curiosity">curiosité pour l'IA</span></div>
+      </div>
+    </section>
+
+    <!-- ============ SERVICES (BENTO) ============ -->
+    <section class="services" id="services" data-label="section#services">
+      <div class="section-head">
+        <p class="eyebrow"><span>02</span> <span data-i18n="services.eyebrow">Services</span></p>
+        <h2 data-i18n="services.title">Ce que je fais <em class="serif">pour vous</em></h2>
+        <p class="section-head__sub" data-i18n="services.sub">Entreprises, startups ou particuliers : un seul interlocuteur du concept à la mise en ligne.</p>
+      </div>
+
+      <div class="bento">
+        <article class="card card--xl spot" data-tilt>
+          <div class="card__tag">01</div>
+          <h3 data-i18n="svc.app.t">Applications web sur mesure</h3>
+          <p data-i18n="svc.app.d">Plateformes SaaS, intranets, outils de gestion. C#, ASP.NET MVC / WebForms, SQL Server, Docker.</p>
+          <div class="code-win" aria-hidden="true">
+            <div class="code-win__bar"><i></i><i></i><i></i><span>StudentService.cs</span></div>
+<pre><code><span class="k">public async</span> Task&lt;<span class="t">Course</span>&gt; <span class="f">EnrollAsync</span>(<span class="t">int</span> id)
+{
+    <span class="k">var</span> student = <span class="k">await</span> _db.Students
+        .<span class="f">FindAsync</span>(id);
+    student.<span class="f">AddXp</span>(<span class="n">50</span>); <span class="c">// gamification ✦</span>
+    <span class="k">return await</span> _ai.<span class="f">SuggestNext</span>(student);
+}</code></pre>
+          </div>
+        </article>
+
+        <article class="card card--lime spot" data-tilt>
+          <div class="card__tag">02</div>
+          <h3 data-i18n="svc.ux.t">Design UI/UX</h3>
+          <p data-i18n="svc.ux.d">Recherche, wireframes, prototypes Figma, design systems.</p>
+          <div class="swatches" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+        </article>
+
+        <article class="card card--violet spot" data-tilt>
+          <div class="card__tag">03</div>
+          <h3 data-i18n="svc.ai.t">Intégration de l'IA</h3>
+          <p data-i18n="svc.ai.d">Assistants, génération de contenus, automatisation, développement assisté par IA.</p>
+          <div class="chat" aria-hidden="true">
+            <span class="bubble bubble--me" data-i18n="svc.ai.q">Résume ce cours en 5 fiches</span>
+            <span class="bubble bubble--ai"><i></i><i></i><i></i></span>
+          </div>
+        </article>
+
+        <article class="card spot" data-tilt>
+          <div class="card__tag">04</div>
+          <h3 data-i18n="svc.wp.t">Sites WordPress &amp; e-commerce</h3>
+          <p data-i18n="svc.wp.d">Sites vitrines, boutiques Prestashop/WooCommerce, maintenance et sécurité.</p>
+          <div class="mini-browser" aria-hidden="true"><span></span><span></span><span></span></div>
+        </article>
+
+        <article class="card card--orange spot" data-tilt>
+          <div class="card__tag">05</div>
+          <h3 data-i18n="svc.brand.t">Identité visuelle</h3>
+          <p data-i18n="svc.brand.d">Logos, chartes graphiques, plaquettes, supports print.</p>
+          <div class="logo-morph" aria-hidden="true"></div>
+        </article>
+
+        <article class="card card--dark spot" data-tilt>
+          <div class="card__tag">06</div>
+          <h3 data-i18n="svc.motion.t">Motion &amp; photo</h3>
+          <p data-i18n="svc.motion.d">Animations, vidéos courtes, photographie produit — After Effects, Premiere, Lightroom.</p>
+          <div class="motion-dots" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ============ EDUVERSE ============ -->
+    <section class="eduverse" id="eduverse" data-label="section#eduverse">
+      <div class="eduverse__inner">
+        <div class="eduverse__copy">
+          <p class="eyebrow eyebrow--light"><span>03</span> <span data-i18n="edu.eyebrow">Projet phare · 2026</span></p>
+          <h2><span class="gradient-text">EduVerse</span> <em class="serif">AI</em></h2>
+          <p class="eduverse__lead" data-i18n="edu.lead">Une plateforme éducative propulsée par l'IA pour les élèves et les professeurs — des tests de 5 ans jusqu'au doctorat, dans toutes les matières.</p>
+
+          <div class="tabs" role="tablist">
+            <button role="tab" class="tab is-active" data-tab="0"><span>01</span><b data-i18n="edu.t1">Catalogue &amp; gamification</b><small data-i18n="edu.t1d">XP, niveaux, séries, mode enfant.</small></button>
+            <button role="tab" class="tab" data-tab="1"><span>02</span><b data-i18n="edu.t2">Laboratoires virtuels</b><small data-i18n="edu.t2d">Expérimenter dans toutes les matières.</small></button>
+            <button role="tab" class="tab" data-tab="2"><span>03</span><b data-i18n="edu.t3">Générateur de connaissances</b><small data-i18n="edu.t3d">Cartes mentales, fiches, résumés, podcasts.</small></button>
+          </div>
+
+          <div class="chips">
+            <span>.NET</span><span>C#</span><span>SQL Server</span><span>LLM</span><span>Web Speech API</span><span>UI/UX</span>
+          </div>
+          <a href="https://github.com/MathieuMoe/eduverse-ia" target="_blank" rel="noopener" class="btn btn--light magnetic" data-track="github_eduverse" data-cursor="Code"><span data-i18n="edu.cta">Voir le code sur GitHub</span> ↗</a>
+        </div>
+
+        <!-- App mockup built entirely in HTML/CSS -->
+        <div class="app" aria-label="Démo interactive EduVerse AI" data-label="div.app-mockup">
+          <div class="app__bar"><i></i><i></i><i></i><span>eduverse.ai/student</span></div>
+          <div class="app__body">
+            <aside class="app__side"><span class="is-on">◆</span><span>▲</span><span>●</span><span>■</span></aside>
+            <div class="app__main">
+              <div class="app__head">
+                <div><small data-i18n="edu.hello">Bonjour Léa 👋</small><b data-i18n="edu.level">Niveau 7 · Explorateur</b></div>
+                <div class="streak">🔥 <b>12</b></div>
+              </div>
+              <div class="xp"><div class="xp__fill" id="xpFill" style="--xp:62%"></div><span id="xpText">620 / 1000 XP</span></div>
+
+              <!-- Panel 0 : quiz -->
+              <div class="panel is-active" data-panel="0">
+                <div class="quiz">
+                  <p class="quiz__subject" data-i18n="edu.qsubj">Astronomie · 10-12 ans</p>
+                  <p class="quiz__q" data-i18n="edu.q">Quelle planète est la plus proche du Soleil ?</p>
+                  <div class="quiz__opts">
+                    <button data-ok="0" data-i18n="edu.o1">Vénus</button>
+                    <button data-ok="1" data-i18n="edu.o2">Mercure</button>
+                    <button data-ok="0" data-i18n="edu.o3">Mars</button>
+                    <button data-ok="0" data-i18n="edu.o4">Terre</button>
+                  </div>
+                  <p class="quiz__fb" id="quizFb" aria-live="polite"></p>
+                </div>
+              </div>
+
+              <!-- Panel 1 : lab -->
+              <div class="panel" data-panel="1">
+                <div class="lab">
+                  <p class="quiz__subject" data-i18n="edu.labsubj">Physique · Pendule simple</p>
+                  <div class="lab__stage">
+                    <div class="pendulum" id="pendulum"><i></i></div>
+                  </div>
+                  <label class="lab__ctrl"><span data-i18n="edu.length">Longueur du fil</span>
+                    <input type="range" min="60" max="160" value="110" id="pendLen">
+                  </label>
+                  <p class="lab__out"><span data-i18n="edu.period">Période</span> T ≈ <b id="pendT">2.10</b> s</p>
+                </div>
+              </div>
+
+              <!-- Panel 2 : generator -->
+              <div class="panel" data-panel="2">
+                <div class="gen">
+                  <p class="quiz__subject" data-i18n="edu.gensubj">Résumé généré · La photosynthèse</p>
+                  <svg class="mindmap" viewBox="0 0 300 150" aria-hidden="true">
+                    <g class="mm-lines"><path d="M150 75 L60 30"/><path d="M150 75 L60 120"/><path d="M150 75 L245 30"/><path d="M150 75 L245 120"/></g>
+                    <g class="mm-nodes">
+                      <rect x="105" y="58" width="90" height="34" rx="17" class="mm-root"/><text x="150" y="80" data-i18n="edu.mm0">Photosynthèse</text>
+                      <rect x="20" y="16" width="80" height="28" rx="14"/><text x="60" y="34" data-i18n="edu.mm1">Lumière</text>
+                      <rect x="20" y="106" width="80" height="28" rx="14"/><text x="60" y="124">CO₂ + H₂O</text>
+                      <rect x="205" y="16" width="80" height="28" rx="14"/><text x="245" y="34" data-i18n="edu.mm2">Glucose</text>
+                      <rect x="205" y="106" width="80" height="28" rx="14"/><text x="245" y="124">O₂</text>
+                    </g>
+                  </svg>
+                  <div class="flash" id="flash" tabindex="0">
+                    <div class="flash__in">
+                      <div class="flash__f" data-i18n="edu.ff">Où a lieu la photosynthèse ?</div>
+                      <div class="flash__b" data-i18n="edu.fb">Dans les chloroplastes 🌿</div>
+                    </div>
+                  </div>
+                  <button class="podcast" id="podcastBtn">▶ <span data-i18n="edu.podcast">Écouter en podcast</span></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ WORK (STACKED CARDS) ============ -->
+    <section class="work" id="work" data-label="section#work">
+      <div class="section-head">
+        <p class="eyebrow"><span>04</span> <span data-i18n="work.eyebrow">Réalisations</span></p>
+        <h2 data-i18n="work.title">Des projets <em class="serif">variés</em>, un même soin</h2>
+        <p class="section-head__sub" data-i18n="work.sub">Une sélection des types de projets que j'ai conçus et développés pour des clients en France et en Espagne.</p>
+      </div>
+
+      <div class="stack">
+        <article class="stack__card" style="--c:var(--lime)">
+          <div class="stack__info">
+            <span class="stack__num">01</span>
+            <p class="stack__cat" data-i18n="w1.cat">SaaS éducatif · Depuis 2024</p>
+            <h3 data-i18n="w1.t">Plateforme de gestion pour académies</h3>
+            <p data-i18n="w1.d">Version 2 complète : design UI/UX, frontend et backend de l'interface élèves et de l'interface de gestion pour la direction et les professeurs.</p>
+            <ul class="stack__tags"><li>C#</li><li>ASP.NET</li><li>SQL Server</li><li>Docker</li><li>UI/UX</li></ul>
+          </div>
+          <div class="stack__visual v-dash" aria-hidden="true">
+            <div class="vd-row"><i style="--w:70%"></i><i style="--w:40%"></i></div>
+            <div class="vd-grid"><span></span><span></span><span></span></div>
+            <div class="vd-chart"><i style="--h:40%"></i><i style="--h:65%"></i><i style="--h:50%"></i><i style="--h:85%"></i><i style="--h:70%"></i><i style="--h:95%"></i></div>
+          </div>
+        </article>
+
+        <article class="stack__card" style="--c:var(--sky)">
+          <div class="stack__info">
+            <span class="stack__num">02</span>
+            <p class="stack__cat" data-i18n="w2.cat">Application B2B · Grands comptes</p>
+            <h3 data-i18n="w2.t">Configurateur de Web Call Back</h3>
+            <p data-i18n="w2.d">Application de configuration automatisée pour de grands comptes : parcours UX, design, intégration HTML/CSS, PHP et jQuery/JSON.</p>
+            <ul class="stack__tags"><li>UX</li><li>PHP</li><li>jQuery</li><li>JSON</li></ul>
+          </div>
+          <div class="stack__visual v-config" aria-hidden="true">
+            <div class="vc-step is-done">1</div><div class="vc-line"></div><div class="vc-step is-done">2</div><div class="vc-line"></div><div class="vc-step">3</div>
+            <div class="vc-form"><i></i><i></i><i class="short"></i><b></b></div>
+          </div>
+        </article>
+
+        <article class="stack__card" style="--c:var(--orange)">
+          <div class="stack__info">
+            <span class="stack__num">03</span>
+            <p class="stack__cat" data-i18n="w3.cat">Marketing digital · Loisirs</p>
+            <h3 data-i18n="w3.t">Campagnes &amp; outils pour un casino</h3>
+            <p data-i18n="w3.d">Développement Symfony et JavaScript, landing pages promotionnelles et graphisme pour les campagnes marketing d'un grand casino de Barcelone.</p>
+            <ul class="stack__tags"><li>Symfony</li><li>JavaScript</li><li>Graphisme</li></ul>
+          </div>
+          <div class="stack__visual v-casino" aria-hidden="true">
+            <div class="slot"><span>7</span><span>★</span><span>7</span></div>
+          </div>
+        </article>
+
+        <article class="stack__card" style="--c:var(--pink)">
+          <div class="stack__info">
+            <span class="stack__num">04</span>
+            <p class="stack__cat" data-i18n="w4.cat">Freelance · 2009 → 2023</p>
+            <h3 data-i18n="w4.t">Sites vitrines &amp; boutiques en ligne</h3>
+            <p data-i18n="w4.d">De nombreux sites WordPress et Prestashop pour artisans, commerces et PME en France et en Espagne, avec référencement et marketing en ligne.</p>
+            <ul class="stack__tags"><li>WordPress</li><li>Prestashop</li><li>SEO</li><li>Marketing</li></ul>
+          </div>
+          <div class="stack__visual v-sites" aria-hidden="true">
+            <div class="vs-win"></div><div class="vs-win"></div><div class="vs-win"></div>
+          </div>
+        </article>
+
+        <article class="stack__card" style="--c:var(--violet)">
+          <div class="stack__info">
+            <span class="stack__num">05</span>
+            <p class="stack__cat" data-i18n="w5.cat">Branding · Print · Motion</p>
+            <h3 data-i18n="w5.t">Identités visuelles complètes</h3>
+            <p data-i18n="w5.d">Logos, plaquettes commerciales, photographie et motion design : une image de marque cohérente, du papier à l'écran.</p>
+            <ul class="stack__tags"><li>Illustrator</li><li>InDesign</li><li>After Effects</li><li>Lightroom</li></ul>
+          </div>
+          <div class="stack__visual v-brand" aria-hidden="true">
+            <div class="vb-logo"></div><div class="vb-type">Aa</div>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- ============ JOURNEY (HORIZONTAL) ============ -->
+    <section class="journey" id="journey" data-label="section#journey">
+      <div class="journey__sticky">
+        <div class="journey__head">
+          <p class="eyebrow"><span>05</span> <span data-i18n="journey.eyebrow">Parcours</span></p>
+          <h2 data-i18n="journey.title">20 ans, <em class="serif">une ligne droite</em> (ou presque)</h2>
+        </div>
+        <div class="journey__track" id="journeyTrack">
+          <div class="jcard"><span class="jcard__year">2006</span><h4>Just Search</h4><p data-i18n="j1">Webmaster / Webdesigner — intégration frontend, mise en page, JavaScript.</p></div>
+          <div class="jcard"><span class="jcard__year">2009</span><h4>Linkeo</h4><p data-i18n="j2">Designer Web / UX — templates, maquettes, logos et management de l'équipe de production.</p></div>
+          <div class="jcard"><span class="jcard__year">2009</span><h4 data-i18n="j3t">Freelance Espagne</h4><p data-i18n="j3">Sites internet, logos, WordPress / Prestashop, print et marketing en ligne.</p></div>
+          <div class="jcard"><span class="jcard__year">2014</span><h4>Linkeo</h4><p data-i18n="j4">Designer UI/UX — application de Web Call Back pour grands comptes.</p></div>
+          <div class="jcard"><span class="jcard__year">2017</span><h4 data-i18n="j5t">Freelance France</h4><p data-i18n="j5">Développement, sites, plaquettes, marketing digital, photographie et motion design.</p></div>
+          <div class="jcard"><span class="jcard__year">2019</span><h4>Grupo Peralada</h4><p data-i18n="j6">Designer Full Stack — Casino Barcelona, Symfony, JavaScript, graphisme.</p></div>
+          <div class="jcard jcard--now"><span class="jcard__year">2024</span><h4>Nabbü</h4><p data-i18n="j7">Développeur Full Stack &amp; UI/UX — V2 de la plateforme éducative, développement assisté par IA.</p></div>
+          <div class="jcard jcard--next"><span class="jcard__year" data-i18n="j8y">Et demain ?</span><h4 data-i18n="j8t">Votre équipe</h4><p data-i18n="j8">Je cherche mon prochain défi : poste ou mission, en télétravail de préférence.</p><a href="#contact" class="link-arrow" data-i18n="j8c">Me contacter →</a></div>
+        </div>
+        <div class="journey__bar"><i id="journeyBar"></i></div>
+      </div>
+    </section>
+
+    <!-- ============ PROCESS ============ -->
+    <section class="process" data-label="section.process">
+      <div class="section-head">
+        <p class="eyebrow"><span>06</span> <span data-i18n="process.eyebrow">Méthode</span></p>
+        <h2 data-i18n="process.title">Du <em class="serif">premier café</em> à la mise en ligne</h2>
+      </div>
+      <ol class="steps">
+        <li class="step"><span class="step__n">01</span><h4 data-i18n="p1t">Comprendre</h4><p data-i18n="p1">Écoute, objectifs, utilisateurs. Design Thinking pour poser les bonnes questions.</p></li>
+        <li class="step"><span class="step__n">02</span><h4 data-i18n="p2t">Concevoir</h4><p data-i18n="p2">Wireframes et prototypes Figma validés avec vous avant la moindre ligne de code.</p></li>
+        <li class="step"><span class="step__n">03</span><h4 data-i18n="p3t">Développer</h4><p data-i18n="p3">Code propre et versionné (Git), accéléré par l'IA, testé à chaque étape.</p></li>
+        <li class="step"><span class="step__n">04</span><h4 data-i18n="p4t">Livrer &amp; suivre</h4><p data-i18n="p4">Mise en ligne, formation, maintenance et évolutions.</p></li>
+      </ol>
+    </section>
+
+    <!-- ============ TOOLBOX ============ -->
+    <section class="toolbox" data-label="section.toolbox">
+      <div class="toolbox__col">
+        <h3><span class="dot dot--orange"></span><span data-i18n="tool.dev">Développement</span></h3>
+        <div class="pills">
+          <span>C# / .NET</span><span>ASP.NET MVC</span><span>WebForms</span><span>SQL Server</span><span>HTML5 / CSS3</span><span>JavaScript</span><span>jQuery</span><span>PHP / Symfony</span><span>WordPress</span><span>Prestashop</span><span>Git / GitHub</span><span>Docker</span><span>Claude Code</span>
+        </div>
+      </div>
+      <div class="toolbox__col">
+        <h3><span class="dot dot--violet"></span><span data-i18n="tool.design">Design</span></h3>
+        <div class="pills">
+          <span>Figma</span><span>Adobe XD</span><span>Illustrator</span><span>Photoshop</span><span>InDesign</span><span>Lightroom</span><span>After Effects</span><span>Premiere Pro</span><span>Material Design</span><span>Design Thinking</span>
+        </div>
+      </div>
+      <div class="toolbox__col">
+        <h3><span class="dot dot--lime"></span><span data-i18n="tool.langs">Langues</span></h3>
+        <div class="langs-list">
+          <div><b>Français</b><span data-i18n="tool.native">Langue maternelle</span></div>
+          <div><b>Español</b><span data-i18n="tool.bilingual">Bilingue</span></div>
+          <div><b>English</b><span data-i18n="tool.pro">Professionnel</span></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ CONTACT ============ -->
+    <section class="contact" id="contact" data-label="section#contact">
+      <div class="contact__head">
+        <p class="eyebrow eyebrow--light"><span>07</span> <span data-i18n="contact.eyebrow">Contact</span></p>
+        <h2 class="contact__big"><span data-i18n="contact.big1">Parlons de</span><br><em class="serif" data-i18n="contact.big2">votre projet</em></h2>
+        <p data-i18n="contact.sub">Recrutement, mission freelance ou projet personnel : je réponds sous 24 h, en français, anglais ou espagnol.</p>
+        <div class="contact__links">
+          <a href="#" class="js-mail magnetic" data-track="email_click" data-u="mathieu.moreau80" data-d="gmail.com">✉ <span>email</span></a>
+          <a href="https://www.linkedin.com/in/mathieu-moreau-045b26114/" target="_blank" rel="noopener" class="magnetic" data-track="linkedin_click">in LinkedIn</a>
+          <a href="https://github.com/MathieuMoe" target="_blank" rel="noopener" class="magnetic" data-track="github_click">⌥ GitHub</a>
+          <a href="https://mam-com.com" target="_blank" rel="noopener" class="magnetic">◎ mam-com.com</a>
+        </div>
+      </div>
+
+      <form class="form" id="contactForm" novalidate>
+        <fieldset class="intent">
+          <legend data-i18n="form.intent">Vous êtes ici pour…</legend>
+          <label><input type="radio" name="intent" value="job" checked><span data-i18n="form.i1">Un poste (CDI / CDD)</span></label>
+          <label><input type="radio" name="intent" value="freelance"><span data-i18n="form.i2">Une mission freelance</span></label>
+          <label><input type="radio" name="intent" value="private"><span data-i18n="form.i3">Un projet personnel</span></label>
+          <label><input type="radio" name="intent" value="other"><span data-i18n="form.i4">Autre chose</span></label>
+        </fieldset>
+        <div class="form__row">
+          <label class="field"><input name="name" required maxlength="120" placeholder=" "><span data-i18n="form.name">Votre nom</span></label>
+          <label class="field"><input name="company" maxlength="120" placeholder=" "><span data-i18n="form.company">Entreprise (optionnel)</span></label>
+        </div>
+        <label class="field"><input name="email" type="email" required maxlength="190" placeholder=" "><span data-i18n="form.email">Email</span></label>
+        <label class="field"><textarea name="message" required rows="4" maxlength="5000" placeholder=" "></textarea><span data-i18n="form.message">Votre message</span></label>
+        <input type="text" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <button class="btn btn--primary btn--full magnetic" type="submit"><span data-i18n="form.send">Envoyer le message</span> <span class="btn__arrow">→</span></button>
+        <p class="form__status" id="formStatus" aria-live="polite"></p>
+        <p class="form__legal" data-i18n="form.legal">Vos données servent uniquement à vous répondre. Aucune revente, aucun cookie publicitaire.</p>
+      </form>
+    </section>
+  </main>
+
+  <!-- ============ FOOTER ============ -->
+  <footer class="footer" data-label="footer">
+    <div class="footer__name" aria-hidden="true">Mathieu Moreau</div>
+    <div class="footer__row">
+      <span>© <span id="year">2026</span> Mathieu Moreau</span>
+      <span data-i18n="footer.built">Fait main en HTML, CSS &amp; JavaScript — zéro framework, zéro template.</span>
+      <span class="footer__hint" data-i18n="footer.hint">Astuce : appuyez sur <kbd>Ctrl</kbd> + <kbd>K</kbd></span>
+      <a href="#top" class="magnetic" data-i18n="footer.top">Haut de page ↑</a>
+    </div>
+  </footer>
+
+  <!-- ============ COMMAND PALETTE ============ -->
+  <div class="palette" id="palette" hidden>
+    <div class="palette__box" role="dialog" aria-modal="true" aria-label="Command palette">
+      <input type="text" id="paletteInput" autocomplete="off" data-i18n-ph="palette.ph" placeholder="Tapez une commande…">
+      <ul id="paletteList"></ul>
+      <p class="palette__foot"><kbd>↑</kbd><kbd>↓</kbd> <span data-i18n="palette.nav">naviguer</span> · <kbd>↵</kbd> <span data-i18n="palette.go">valider</span> · <kbd>Esc</kbd></p>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status"></div>
+
+  <script src="assets/js/i18n.js"></script>
+  <script src="assets/js/main.js"></script>
+  <a href="/" style="position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:600;padding:.7rem 1.2rem;border-radius:999px;font:600 .9rem system-ui,sans-serif;color:#111;background:linear-gradient(90deg,#FF3D6E,#FF8A1E,#FFD21F,#34E089,#1EC8FF,#B65CFF);box-shadow:0 10px 30px -10px #0008">✦ Nouvelle version · New · Nueva →</a>
+</body>
+</html>

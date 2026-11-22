@@ -1,0 +1,17 @@
+# ---- Secrets: NEVER in Git ----
+/api/config.php
+/app/config.php
+.env
+
+# ---- Local / OS ----
+_LEEME-SUBIR-ESTA-CARPETA.txt
+Thumbs.db
+desktop.ini
+.DS_Store
+.vs/
+.vscode/
+node_modules/
+*.log
+
+# ---- Private backups ----
+/app/backup-antes-spectrum/
