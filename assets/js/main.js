@@ -394,7 +394,7 @@ async function animations() {
     $$('main [data-in]').forEach((el) => { if (!el.closest('.hero')) gsap.from(el, { opacity: 0, y: 40, duration: 1.1, ease: 'expo.out', scrollTrigger: { trigger: el, start: 'top 90%' } }); });
     // stats: 3D flip tiles
     gsap.fromTo('[data-flip]', { rotateX: -95, opacity: 0, transformPerspective: 900 }, { rotateX: 0, opacity: 1, duration: 1.4, ease: 'expo.out', stagger: 0.12, scrollTrigger: { trigger: '.stats', start: 'top 88%' } });
-    ScrollTrigger.batch('[data-card], .holo, .aud-list.is-on li, .diplomas li', {
+    ScrollTrigger.batch('[data-card], .aud-list.is-on li, .diplomas li', {
         start: 'top 92%',
         onEnter: (els) => gsap.fromTo(els, { opacity: 0, y: 70, rotateX: -18, transformPerspective: 1000 }, { opacity: 1, y: 0, rotateX: 0, duration: 1.2, ease: 'expo.out', stagger: 0.07, overwrite: 'auto', clearProps: 'transform' }),
     });
@@ -412,12 +412,13 @@ async function animations() {
     });
     ScrollTrigger.create({ trigger: '.marquee', start: 'top bottom', end: 'bottom top', onUpdate: (s) => rows.forEach((tw) => gsap.to(tw, { timeScale: (1 + Math.min(6, Math.abs(s.getVelocity()) / 300)) * (s.direction || 1), duration: 0.3, overwrite: true })) });
     stack3d();
+    scroll3d();
     journey();
     cube();
     // skill bars fill when visible
     $$('.eq').forEach((g) => gsap.fromTo($$('em', g), { '--p': 0 }, { '--p': 1, duration: 1.4, ease: 'expo.out', stagger: 0.05, scrollTrigger: { trigger: g, start: 'top 88%' } }));
-    // footer: the name fills with the spectrum
-    ScrollTrigger.create({ trigger: '.ft', start: 'top bottom', end: 'bottom bottom', scrub: true, onUpdate: (s) => $('[data-ft-name]').style.setProperty('--fill-n', s.progress.toFixed(3)) });
+    // footer columns rise in
+    gsap.from('.ft-grid > *', { y: 40, opacity: 0, duration: 1, ease: 'expo.out', stagger: 0.08, scrollTrigger: { trigger: '.ft', start: 'top 90%' } });
     ScrollTrigger.refresh();
 }
 intro().then(animations).catch((e) => { console.error(e); root.classList.replace('motion', 'no-motion'); $('.loader')?.remove(); });
@@ -428,9 +429,34 @@ function stack3d() {
     cards.forEach((c, i) => {
         const next = cards[i + 1];
         if (!next) return;
-        gsap.to(c, { scale: 0.9, rotateX: 10, y: -30, filter: 'brightness(.6) saturate(.8)', transformPerspective: 1600, ease: 'none',
+        gsap.to(c, { scale: 0.88, rotateX: 14, y: -44, filter: 'brightness(.58) saturate(.8)', transformPerspective: 1400, ease: 'none',
             scrollTrigger: { trigger: next, start: 'top bottom', end: `top ${mobile ? 90 : 110}px`, scrub: true } });
     });
+}
+
+/* ---------------- Scroll 3D: Suite EduVerse cards fly in from depth, EduVerse title + app rig turn ---------------- */
+function scroll3d() {
+    // Suite EduVerse: each card comes from far away, tilted, and lands in place as you scroll
+    $$('.holo').forEach((card, i) => {
+        const col = i === 0 ? -1 : ((i + 1) % 4) - 1.5;
+        gsap.fromTo(card, { '--sz': '-900px', '--srx': '62deg', '--sry': `${col * 22}deg`, '--sy': '160px', opacity: 0 },
+            { '--sz': '0px', '--srx': '0deg', '--sry': '0deg', '--sy': '0px', opacity: 1, ease: 'power2.out',
+              scrollTrigger: { trigger: card, start: 'top 110%', end: 'top 50%', scrub: 1 } });
+    });
+    // EduVerse: extruded title and app rig rotate with the scroll
+    const ex = $('[data-ex3d]');
+    if (ex) gsap.fromTo(ex, { '--ex': '38deg', '--ey': '-38deg' }, { '--ex': '6deg', '--ey': '14deg', ease: 'none', scrollTrigger: { trigger: '#eduverse', start: 'top bottom', end: 'bottom top', scrub: 1 } });
+    const rig = $('[data-app-rig]');
+    if (rig && wide) gsap.fromTo(rig, { '--sry': '-30deg', '--srx': '16deg' }, { '--sry': '14deg', '--srx': '-8deg', ease: 'none', scrollTrigger: { trigger: '#eduverse', start: 'top bottom', end: 'bottom top', scrub: 1 } });
+    // Nabbü: the screenshots slide while the gallery is pinned
+    const show = $('[data-nb-show]'), stage = $('[data-nb-stage]');
+    if (show && stage?._setPos && wide) {
+        const n = stage._count;
+        stage.classList.add('is-scrub');
+        const st = ScrollTrigger.create({ trigger: show, pin: true, start: 'center center', end: () => '+=' + innerHeight * 0.55 * Math.max(1, n - 1), scrub: 0.6,
+            onUpdate: (self) => stage._setPos(self.progress * (n - 1)) });
+        stage._goto = (i) => { const y = st.start + (st.end - st.start) * (i / Math.max(1, n - 1)); lenis ? lenis.scrollTo(y, { duration: 1.1 }) : scrollTo({ top: y, behavior: 'smooth' }); };
+    }
 }
 
 /* ---------------- Pointer: cursor, magnetic, tilt, spotlight, holo, app parallax ---------------- */
@@ -457,6 +483,14 @@ if (finePointer && !reduced) {
         });
         el.addEventListener('pointerleave', () => { el.style.removeProperty('--rx'); el.style.removeProperty('--ry'); });
     });
+    $$('[data-stack-card]').forEach((card) => {
+        const v = $('.sc-visual', card);
+        card.addEventListener('pointermove', (e) => {
+            const r = v.getBoundingClientRect(), px = (e.clientX - r.left) / r.width - 0.5, py = (e.clientY - r.top) / r.height - 0.5;
+            v.style.setProperty('--vy', `${clamp(px, -0.6, 0.6) * 18}deg`); v.style.setProperty('--vx', `${clamp(py, -0.6, 0.6) * -14}deg`);
+        });
+        card.addEventListener('pointerleave', () => { v.style.removeProperty('--vy'); v.style.removeProperty('--vx'); });
+    });
     $$('[data-holo]').forEach((el) => {
         el.addEventListener('pointermove', (e) => {
             const r = el.getBoundingClientRect(), px = (e.clientX - r.left) / r.width, py = (e.clientY - r.top) / r.height;
@@ -466,11 +500,16 @@ if (finePointer && !reduced) {
         });
         el.addEventListener('pointerleave', () => { ['--rx', '--ry'].forEach((p) => el.style.removeProperty(p)); });
     });
-    const scene = $('[data-app-scene]'), app = $('.app', scene);
+    const ex = $('[data-ex3d]'), eduSec = $('#eduverse');
+    if (ex && eduSec) {
+        eduSec.addEventListener('pointermove', (e) => { ex.style.setProperty('--mey', `${(e.clientX / innerWidth - 0.5) * 30}deg`); ex.style.setProperty('--mex', `${(0.5 - e.clientY / innerHeight) * 20}deg`); });
+        eduSec.addEventListener('pointerleave', () => { ex.style.setProperty('--mey', '0deg'); ex.style.setProperty('--mex', '0deg'); });
+    }
+    const scene = $('[data-app-scene]'), app = $('[data-app-rig]', scene);
     if (scene && wide) {
         scene.addEventListener('pointermove', (e) => {
             const r = scene.getBoundingClientRect(), px = (e.clientX - r.left) / r.width - 0.5, py = (e.clientY - r.top) / r.height - 0.5;
-            app.style.setProperty('--ry', `${-6 + px * 10}deg`); app.style.setProperty('--rx', `${4 - py * 8}deg`);
+            app.style.setProperty('--ry', `${-6 + px * 16}deg`); app.style.setProperty('--rx', `${4 - py * 12}deg`);
             $$('.float-chip', scene).forEach((c, i) => { const k = (i + 1) * 18; c.style.setProperty('--fx', `${px * k}px`); c.style.setProperty('--fy', `${py * k}px`); });
         });
         scene.addEventListener('pointerleave', () => { app.style.removeProperty('--ry'); app.style.removeProperty('--rx'); });
@@ -491,41 +530,48 @@ if (finePointer && !reduced) {
     }));
 })();
 
-/* ---------------- Nabbü: 3D coverflow of real screenshots + lightbox ---------------- */
+/* ---------------- Nabbü: 3D coverflow of real screenshots + lightbox (pinned & scroll-driven on desktop) ---------------- */
 (() => {
     const stage = $('[data-nb-stage]');
     if (!stage) return;
     const shots = $$('[data-nb]', stage), dots = $$('[data-nb-dots] button'), n = shots.length;
-    let cur = 0, timer = 0, drag = null;
+    let pos = 0, timer = 0, drag = null, stageVisible = false;
+    const cur = () => Math.round(pos);
     const layout = () => {
-        const w = stage.clientWidth;
+        const w = stage.clientWidth, c = cur();
         shots.forEach((el, i) => {
-            const d = i - cur, a = Math.abs(d);
-            el.classList.toggle('is-front', d === 0);
+            const d = i - pos, a = Math.abs(d);
+            el.classList.toggle('is-front', i === c);
             el.style.transform = `translateX(${d * Math.min(w * 0.36, 420)}px) translateZ(${-a * 260}px) rotateY(${clamp(-d * 32, -60, 60)}deg)`;
-            el.style.opacity = a > 2 ? '0' : String(1 - a * 0.22);
-            el.style.filter = a ? `brightness(${1 - a * 0.25}) blur(${a * 0.6}px)` : '';
-            el.style.zIndex = String(20 - a);
+            el.style.opacity = a > 2.4 ? '0' : String(1 - a * 0.22);
+            el.style.filter = a > 0.05 ? `brightness(${1 - Math.min(a, 2) * 0.25}) blur(${(Math.min(a, 2) * 0.6).toFixed(2)}px)` : '';
+            el.style.zIndex = String(20 - Math.round(a * 2));
         });
-        dots.forEach((d, i) => d.toggleAttribute('aria-current', i === cur));
+        dots.forEach((d, i) => d.toggleAttribute('aria-current', i === c));
     };
-    const go = (i, user = true) => { cur = (i + n) % n; layout(); if (user) { track('nabbu_shot', cur + 1); restart(); } };
-    const restart = () => { clearInterval(timer); if (!reduced && n > 1) timer = setInterval(() => { if (!document.hidden && stageVisible) go(cur + 1, false); }, 4500); };
-    let stageVisible = false;
+    const scrubbing = () => stage.classList.contains('is-scrub');
+    const go = (i, user = true) => {
+        const target = (i + n) % n;
+        if (scrubbing() && stage._goto) { stage._goto(target); return; }
+        pos = target; layout(); if (user) { track('nabbu_shot', target + 1); restart(); }
+    };
+    const restart = () => { clearInterval(timer); if (!reduced && n > 1) timer = setInterval(() => { if (!document.hidden && stageVisible && !scrubbing()) go(cur() + 1, false); }, 4500); };
+    stage._setPos = (p) => { pos = clamp(p, 0, n - 1); layout(); };
+    stage._count = n;
     new IntersectionObserver(([en]) => { stageVisible = en.isIntersecting; }).observe(stage);
-    $('[data-nb-prev]').addEventListener('click', () => go(cur - 1));
-    $('[data-nb-next]').addEventListener('click', () => go(cur + 1));
+    $('[data-nb-prev]').addEventListener('click', () => go(cur() - 1));
+    $('[data-nb-next]').addEventListener('click', () => go(cur() + 1));
     dots.forEach((d, i) => d.addEventListener('click', () => go(i)));
-    stage.addEventListener('keydown', (e) => { if (e.key === 'ArrowLeft') go(cur - 1); if (e.key === 'ArrowRight') go(cur + 1); });
-    stage.addEventListener('pointerdown', (e) => { drag = { x: e.clientX, moved: false }; });
+    stage.addEventListener('keydown', (e) => { if (e.key === 'ArrowLeft') go(cur() - 1); if (e.key === 'ArrowRight') go(cur() + 1); });
+    stage.addEventListener('pointerdown', (e) => { drag = { x: e.clientX }; });
     addEventListener('pointerup', (e) => {
         if (!drag) return;
         const dx = e.clientX - drag.x; drag = null;
-        if (Math.abs(dx) > 40) go(cur + (dx < 0 ? 1 : -1));
+        if (Math.abs(dx) > 40) go(cur() + (dx < 0 ? 1 : -1));
     });
     const box = $('[data-nb-lightbox]');
     shots.forEach((el, i) => el.addEventListener('click', () => {
-        if (i !== cur) { go(i); return; }
+        if (i !== cur()) { go(i); return; }
         const img = $('img', el);
         if (!img || !box) return;
         $('img', box).src = img.src; $('img', box).alt = img.alt; $('p', box).textContent = $('figcaption', el).textContent;
@@ -736,86 +782,28 @@ if (!wide || !motion) {
     show(stars.find((s) => s.classList.contains('is-highlight')) || stars.reduce((a, b) => (+b.dataset.lv > +a.dataset.lv ? b : a)));
 })();
 
-/* ---------------- Footer: geometric 3D scene (wireframe polyhedra + low-poly terrain), canvas 2D ---------------- */
+/* ---------------- Language select (nav) ---------------- */
 (() => {
-    const canvas = $('[data-ft-geo]');
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    const PHI = (1 + Math.sqrt(5)) / 2;
-    const solid = (verts, edgeLen) => {
-        const edges = [];
-        for (let i = 0; i < verts.length; i++) for (let j = i + 1; j < verts.length; j++) {
-            const d = Math.hypot(verts[i][0] - verts[j][0], verts[i][1] - verts[j][1], verts[i][2] - verts[j][2]);
-            if (Math.abs(d - edgeLen) < 0.01) edges.push([i, j]);
-        }
-        const m = Math.max(...verts.map((v) => Math.hypot(...v)));
-        return { verts: verts.map((v) => v.map((c) => c / m)), edges };
-    };
-    const ico = solid([[-1, PHI, 0], [1, PHI, 0], [-1, -PHI, 0], [1, -PHI, 0], [0, -1, PHI], [0, 1, PHI], [0, -1, -PHI], [0, 1, -PHI], [PHI, 0, -1], [PHI, 0, 1], [-PHI, 0, -1], [-PHI, 0, 1]], 2);
-    const octa = solid([[1, 0, 0], [-1, 0, 0], [0, 1, 0], [0, -1, 0], [0, 0, 1], [0, 0, -1]], Math.SQRT2);
-    const cube = solid([[-1, -1, -1], [1, -1, -1], [-1, 1, -1], [1, 1, -1], [-1, -1, 1], [1, -1, 1], [-1, 1, 1], [1, 1, 1]], 2);
-    const tetra = solid([[1, 1, 1], [1, -1, -1], [-1, 1, -1], [-1, -1, 1]], 2 * Math.SQRT2);
-    const kinds = [ico, octa, cube, tetra, ico, octa, cube];
-    const objs = kinds.map((k, i) => ({ k, x: (i / (kinds.length - 1) - 0.5) * 1.9, y: -0.35 + ((i * 37) % 10) / 22, z: 250 + ((i * 53) % 5) * 90, s: 55 + ((i * 29) % 4) * 18, rx: i, ry: i * 0.7, vx: 0.0035 + (i % 3) * 0.002, vy: 0.005 + (i % 4) * 0.0015, hue: (i * 51) % 360 }));
-    let W = 0, H = 0, dpr = 1, raf = 0, visible = false, t = 0, mx = 0, my = 0;
-    const resize = () => {
-        dpr = Math.min(devicePixelRatio, 1.5);
-        W = canvas.clientWidth; H = canvas.clientHeight;
-        canvas.width = W * dpr; canvas.height = H * dpr;
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    };
-    const F = 620;
-    const project = (x, y, z) => { const k = F / (F + z); return [W / 2 + x * k, H * 0.42 + y * k, k]; };
-    const draw = () => {
-        const light = root.dataset.theme === 'light' && !root.classList.contains('code-mode');
-        const L = light ? 45 : 62, A = light ? 0.75 : 1;
-        ctx.clearRect(0, 0, W, H);
-        ctx.lineCap = 'round';
-        // low-poly terrain: a triangulated grid that breathes, seen in perspective
-        const cols = 28, rows = 14, sx = W * 2.2 / cols, sz = 70, y0 = H * 0.55;
-        const pts = [];
-        for (let r = 0; r <= rows; r++) {
-            const row = [];
-            for (let c = 0; c <= cols; c++) {
-                const x = (c - cols / 2) * sx + mx * 40, z = r * sz - ((t * 30) % sz);
-                const y = y0 + Math.sin(c * 0.55 + t * 0.9) * Math.cos(r * 0.6 + t * 0.7) * 26;
-                row.push([...project(x, y, z), c]);
-            }
-            pts.push(row);
-        }
-        ctx.lineWidth = 1;
-        for (let r = 0; r < rows; r++) for (let c = 0; c < cols; c++) {
-            const a = pts[r][c], b = pts[r][c + 1], d = pts[r + 1][c], e = pts[r + 1][c + 1];
-            const alpha = (0.05 + (1 - r / rows) * 0.32) * A;
-            ctx.strokeStyle = `hsla(${(c * 12 + t * 25) % 360}, 90%, ${L}%, ${alpha})`;
-            ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.lineTo(d[0], d[1]); ctx.closePath();
-            ctx.moveTo(b[0], b[1]); ctx.lineTo(e[0], e[1]); ctx.lineTo(d[0], d[1]);
-            ctx.stroke();
-        }
-        // floating wireframe polyhedra
-        objs.forEach((o) => {
-            o.rx += o.vx; o.ry += o.vy;
-            const cx = Math.cos(o.rx), sxr = Math.sin(o.rx), cy = Math.cos(o.ry), syr = Math.sin(o.ry);
-            const bob = Math.sin(t * 1.2 + o.hue) * 14;
-            const P = o.k.verts.map(([x, y, z]) => {
-                const x1 = x * cy + z * syr, z1 = -x * syr + z * cy;
-                const y2 = y * cx - z1 * sxr, z2 = y * sxr + z1 * cx;
-                return project(o.x * W * 0.5 + x1 * o.s + mx * 30 * (o.z / 300), o.y * H + y2 * o.s + bob + my * 20, o.z + z2 * o.s);
-            });
-            o.k.edges.forEach(([i, j], n) => {
-                const depth = (P[i][2] + P[j][2]) / 2;
-                ctx.strokeStyle = `hsla(${(o.hue + n * 9 + t * 40) % 360}, 95%, ${L}%, ${Math.min(1, depth * 0.95) * A})`;
-                ctx.lineWidth = 1.4 * depth;
-                ctx.beginPath(); ctx.moveTo(P[i][0], P[i][1]); ctx.lineTo(P[j][0], P[j][1]); ctx.stroke();
-            });
-            ctx.fillStyle = light ? 'rgba(20,20,30,.6)' : 'rgba(255,255,255,.85)';
-            P.forEach(([x, y, k]) => { ctx.beginPath(); ctx.arc(x, y, 1.8 * k, 0, Math.PI * 2); ctx.fill(); });
-        });
-    };
-    const loop = () => { t += 0.016; mx = lerp(mx, mouse.nx, 0.04); my = lerp(my, -mouse.ny, 0.04); draw(); raf = visible ? requestAnimationFrame(loop) : 0; };
-    resize(); addEventListener('resize', () => { resize(); if (!raf) draw(); });
-    if (reduced) { draw(); return; }
-    new IntersectionObserver(([en]) => { visible = en.isIntersecting; if (visible && !raf) raf = requestAnimationFrame(loop); }).observe(canvas);
+    const box = $('[data-lang-select]');
+    if (!box) return;
+    const btn = $('.ls-btn', box), items = $$('.ls-menu a', box);
+    const set = (open) => { box.classList.toggle('is-open', open); btn.setAttribute('aria-expanded', String(open)); };
+    btn.addEventListener('click', (e) => { e.stopPropagation(); const open = !box.classList.contains('is-open'); set(open); if (open) (items.find((a) => !a.hasAttribute('aria-current')) || items[0]).focus(); });
+    document.addEventListener('click', (e) => { if (!box.contains(e.target)) set(false); });
+    box.addEventListener('keydown', (e) => {
+        const i = items.indexOf(document.activeElement);
+        if (e.key === 'Escape') { set(false); btn.focus(); }
+        else if (e.key === 'ArrowDown') { e.preventDefault(); if (!box.classList.contains('is-open')) set(true); items[(i + 1) % items.length].focus(); }
+        else if (e.key === 'ArrowUp') { e.preventDefault(); items[(i - 1 + items.length) % items.length].focus(); }
+    });
+})();
+
+/* ---------------- Footer: the dot matrix lights up in the spectrum around the cursor ---------------- */
+(() => {
+    const ft = $('[data-ft]');
+    if (!ft || !finePointer) return;
+    ft.addEventListener('pointermove', (e) => { const r = ft.getBoundingClientRect(); ft.style.setProperty('--fx', `${e.clientX - r.left}px`); ft.style.setProperty('--fy', `${e.clientY - r.top}px`); });
+    ft.addEventListener('pointerleave', () => { ft.style.setProperty('--fy', '120%'); });
 })();
 
 /* ---------------- "Ask me" assistant: answers with links, action buttons and follow-up questions ---------------- */

@@ -176,10 +176,17 @@ header('Referrer-Policy: strict-origin-when-cross-origin');
     <div class="nav-now" aria-hidden="true"><span class="nav-now-n" data-now-n>00</span><span class="nav-now-t" data-now-t><?= $e($X['sec']['top']) ?></span></div>
     <div class="nav-tools">
         <span class="status-pill"><i></i><span><?= $s('nav.status') ?></span></span>
-        <div class="langs" role="group" aria-label="Language">
-            <?php foreach (['fr', 'en', 'es'] as $l): ?>
-            <a href="<?= $B ?>/<?= $l ?>/<?= $e($recQs) ?>" hreflang="<?= $l ?>" lang="<?= $l ?>" data-track="lang_switch" data-value="<?= $l ?>"<?= $l === $lang ? ' aria-current="true"' : '' ?>><?= strtoupper($l) ?></a>
-            <?php endforeach; ?>
+        <div class="lang-select" data-lang-select>
+            <?php $langNames = ['fr' => 'Français', 'en' => 'English', 'es' => 'Español']; ?>
+            <button type="button" class="ls-btn" aria-haspopup="true" aria-expanded="false" aria-controls="lang-menu" aria-label="Language: <?= $e($langNames[$lang]) ?>">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.6 2.6 3.8 5.6 3.8 9s-1.2 6.4-3.8 9c-2.6-2.6-3.8-5.6-3.8-9S9.4 5.6 12 3z"/></svg>
+                <b><?= strtoupper($lang) ?></b><i class="ls-arrow" aria-hidden="true"></i>
+            </button>
+            <ul class="ls-menu" id="lang-menu" role="menu">
+                <?php foreach (['fr', 'en', 'es'] as $l): ?>
+                <li role="none"><a role="menuitem" href="<?= $B ?>/<?= $l ?>/<?= $e($recQs) ?>" hreflang="<?= $l ?>" lang="<?= $l ?>" data-track="lang_switch" data-value="<?= $l ?>"<?= $l === $lang ? ' aria-current="true"' : '' ?>><b><?= strtoupper($l) ?></b><span><?= $langNames[$l] ?></span><?= $l === $lang ? '<i aria-hidden="true">✓</i>' : '' ?></a></li>
+                <?php endforeach; ?>
+            </ul>
         </div>
         <button class="icon-btn" type="button" data-code-toggle title="Design / Code" aria-pressed="false"><span class="mode-design">✦</span><span class="mode-code">&lt;/&gt;</span></button>
         <button class="icon-btn" type="button" data-theme-toggle title="Theme" aria-label="Theme">
@@ -387,6 +394,7 @@ header('Referrer-Policy: strict-origin-when-cross-origin');
             </div>
         </div>
 
+        <div class="nb-show" data-nb-show>
         <div class="nb-stage" data-nb-stage tabindex="0" aria-roledescription="carousel" aria-label="Nabbü">
             <?php if ($nbShots): foreach ($nbShots as $i => $shot): ?>
             <figure class="nb-shot" data-nb="<?= $i ?>" style="--k:<?= $i ?>">
@@ -409,6 +417,7 @@ header('Referrer-Policy: strict-origin-when-cross-origin');
             <button type="button" class="round-btn" data-nb-next aria-label="<?= $e($NB['next']) ?>">→</button>
         </div>
         <p class="hint center"><?= $e($NB['hint']) ?></p>
+        </div>
     </div>
     <dialog class="nb-lightbox" data-nb-lightbox><img alt=""><p></p><form method="dialog"><button class="round-btn" aria-label="<?= $e($X['close']) ?>">✕</button></form></dialog>
 </section>
@@ -419,7 +428,7 @@ header('Referrer-Policy: strict-origin-when-cross-origin');
     <div class="edu-inner">
         <div class="edu-copy">
             <p class="eyebrow light"><span>04</span> <?= $s('edu.eyebrow') ?></p>
-            <h2 class="edu-title"><span class="rainbow-text">EduVerse</span> <em class="serif">AI</em></h2>
+            <h2 class="edu-title" aria-label="EduVerse AI"><span class="ex3d" data-ex3d aria-hidden="true"><?php for ($i = 14; $i >= 1; $i--): ?><span class="ex-l" style="--i:<?= $i ?>">EduVerse</span><?php endfor; ?><span class="ex-face">EduVerse</span></span> <em class="serif" aria-hidden="true">AI</em></h2>
             <p class="edu-tag"><?= $e($W['eduverse']['tagline']) ?></p>
             <p class="edu-lead"><?= $e($W['eduverse']['text']) ?></p>
             <ul class="edu-points"><?php foreach ($W['eduverse']['points'] as $pt): ?><li><?= $e($pt) ?></li><?php endforeach; ?></ul>
@@ -433,6 +442,9 @@ header('Referrer-Policy: strict-origin-when-cross-origin');
         </div>
 
         <div class="app-scene" data-app-scene>
+          <div class="app-rig" data-app-rig>
+            <div class="app-ghost g2" aria-hidden="true"><div class="ghost-mm"><i></i><i></i><i></i><i></i><b></b></div></div>
+            <div class="app-ghost g1" aria-hidden="true"><div class="ghost-q"><small>🧪 Lab · Physics</small><b>T = 2π√(L/g)</b><i></i><i></i><i></i></div></div>
             <div class="app" data-label="div.app-mockup">
                 <div class="app-bar"><i></i><i></i><i></i><span>eduverse.ai/student</span></div>
                 <div class="app-body">
@@ -497,6 +509,7 @@ header('Referrer-Policy: strict-origin-when-cross-origin');
             <div class="float-chip fc1" aria-hidden="true">+50 XP ✦</div>
             <div class="float-chip fc2" aria-hidden="true">🧠 BKT</div>
             <div class="float-chip fc3" aria-hidden="true">Claude · GPT · Gemini</div>
+          </div>
         </div>
     </div>
 </section>
@@ -795,37 +808,35 @@ header('Referrer-Policy: strict-origin-when-cross-origin');
 </section>
 </main>
 
-<footer class="ft" data-label="footer">
-    <canvas class="ft-geo" data-ft-geo aria-hidden="true"></canvas>
-    <div class="ft-name" data-ft-name aria-hidden="true">
-        <svg viewBox="0 0 1600 250" preserveAspectRatio="xMidYMid meet">
-            <defs>
-                <linearGradient id="ftGrad" x1="0" y1="0" x2="1600" y2="0" gradientUnits="userSpaceOnUse">
-                    <stop offset="0" stop-color="#FF3D6E"/><stop offset=".17" stop-color="#FF8A1E"/><stop offset=".33" stop-color="#FFD21F"/><stop offset=".5" stop-color="#34E089"/><stop offset=".67" stop-color="#1EC8FF"/><stop offset=".83" stop-color="#4C6BFF"/><stop offset="1" stop-color="#B65CFF"/>
-                    <animateTransform attributeName="gradientTransform" type="translate" values="-1600 0;0 0" dur="6s" repeatCount="indefinite"/>
-                </linearGradient>
-                <filter id="ftWobble" x="-5%" y="-20%" width="110%" height="140%">
-                    <feTurbulence type="fractalNoise" baseFrequency="0.012 0.03" numOctaves="2" seed="7" result="n">
-                        <animate attributeName="baseFrequency" values="0.012 0.03;0.02 0.05;0.012 0.03" dur="9s" repeatCount="indefinite"/>
-                    </feTurbulence>
-                    <feDisplacementMap in="SourceGraphic" in2="n" scale="9" xChannelSelector="R" yChannelSelector="G"/>
-                </filter>
-                <filter id="ftBlur"><feGaussianBlur stdDeviation="26"/></filter>
-                <clipPath id="ftClip"><text x="800" y="200" text-anchor="middle" textLength="1560" lengthAdjust="spacingAndGlyphs" class="ft-text">Mathieu Moreau</text></clipPath>
-            </defs>
-            <g clip-path="url(#ftClip)" class="ft-liquid">
-                <rect width="1600" height="250" class="ft-base"/>
-                <g filter="url(#ftBlur)">
-                    <circle r="150" fill="#FF3D6E"><animate attributeName="cx" values="100;700;250;100" dur="11s" repeatCount="indefinite"/><animate attributeName="cy" values="60;200;120;60" dur="7s" repeatCount="indefinite"/></circle>
-                    <circle r="170" fill="#FFD21F"><animate attributeName="cx" values="600;1100;400;600" dur="13s" repeatCount="indefinite"/><animate attributeName="cy" values="220;80;180;220" dur="9s" repeatCount="indefinite"/></circle>
-                    <circle r="160" fill="#34E089"><animate attributeName="cx" values="1000;300;1300;1000" dur="15s" repeatCount="indefinite"/><animate attributeName="cy" values="100;230;60;100" dur="8s" repeatCount="indefinite"/></circle>
-                    <circle r="180" fill="#1EC8FF"><animate attributeName="cx" values="1400;900;1550;1400" dur="12s" repeatCount="indefinite"/><animate attributeName="cy" values="180;60;210;180" dur="10s" repeatCount="indefinite"/></circle>
-                    <circle r="150" fill="#B65CFF"><animate attributeName="cx" values="1250;1550;700;1250" dur="14s" repeatCount="indefinite"/><animate attributeName="cy" values="40;160;230;40" dur="6s" repeatCount="indefinite"/></circle>
-                </g>
-            </g>
-            <text x="800" y="200" text-anchor="middle" textLength="1560" lengthAdjust="spacingAndGlyphs" class="ft-text ft-stroke" filter="url(#ftWobble)">Mathieu Moreau</text>
-            <text x="800" y="200" text-anchor="middle" textLength="1560" lengthAdjust="spacingAndGlyphs" class="ft-text ft-stroke2">Mathieu Moreau</text>
-        </svg>
+<footer class="ft" data-ft data-label="footer">
+    <div class="ft-line" aria-hidden="true"></div>
+    <div class="ft-grid">
+        <div class="ft-id">
+            <a href="#top" class="ft-logo" aria-label="Mathieu Moreau">
+                <svg viewBox="0 0 48 48" aria-hidden="true"><rect x="2" y="2" width="44" height="44" rx="14" fill="#0E0E12"/><rect x="2" y="2" width="44" height="44" rx="14" fill="none" stroke="url(#lgSpec)" stroke-width="2.5"/><path d="M13 34V15l11 12 11-12v19" fill="none" stroke="url(#lgSpec)" stroke-width="4.6" stroke-linecap="round" stroke-linejoin="round"/><circle cx="38.5" cy="34" r="2.6" fill="#FFD21F"/></svg>
+                <span><b>Mathieu Moreau</b><small><?= $e($X['explore']) ?></small></span>
+            </a>
+            <p class="ft-tag"><?= $s('hero.intro') ?></p>
+            <span class="status-pill ft-status"><i></i><span><?= $s('nav.status') ?></span></span>
+        </div>
+        <nav class="ft-col" aria-label="Sections">
+            <h3><?= $e($X['menu']) ?></h3>
+            <ul><?php foreach (['nabbu', 'eduverse', 'suite', 'work', 'journey', 'skills', 'ask'] as $id): ?><li><a href="#<?= $id ?>"><?= $e($X['sec'][$id]) ?></a></li><?php endforeach; ?></ul>
+        </nav>
+        <div class="ft-col">
+            <h3><?= $s('contact.eyebrow') ?></h3>
+            <ul>
+                <li><a href="#" class="ft-mail" data-mail data-u="mathieu.moreau80" data-d="gmail.com" data-track="email_click"><span>email</span></a></li>
+                <li><a href="<?= $e($p['linkedin']) ?>" target="_blank" rel="noopener" data-track="linkedin_click">LinkedIn ↗</a></li>
+                <li><a href="<?= $e($p['github']) ?>" target="_blank" rel="noopener" data-track="github_click">GitHub ↗</a></li>
+                <li><a <?= $cvAttr ?>><?= $e($X['open_cv']) ?> ↗</a></li>
+            </ul>
+        </div>
+        <div class="ft-col ft-time">
+            <h3><?= $s('hero.localtime') ?></h3>
+            <p class="ft-clock"><b data-clock>--:--</b> <small>Europe/Paris</small></p>
+            <a href="#top" class="ft-top magnetic" aria-label="<?= $e(strip_tags($s('footer.top'))) ?>">↑</a>
+        </div>
     </div>
     <div class="ft-row">
         <span>© <?= date('Y') ?> Mathieu Moreau</span>
@@ -833,7 +844,6 @@ header('Referrer-Policy: strict-origin-when-cross-origin');
         <span class="ft-hint"><?= $s('footer.hint') ?></span>
         <a href="/old_v1-02/<?= $e($recQs) ?>" data-track="v1_link">← <?= $s('footer.classic') ?></a>
         <button type="button" class="link" data-privacy><?= $e($C['footer']['privacy']) ?></button>
-        <a href="#top"><?= $s('footer.top') ?></a>
     </div>
 </footer>
 
