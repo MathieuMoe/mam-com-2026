@@ -850,7 +850,7 @@ header('Referrer-Policy: strict-origin-when-cross-origin');
 <div class="palette" data-palette hidden>
     <div class="palette-box" role="dialog" aria-modal="true" aria-label="Command palette">
         <input type="text" data-palette-input autocomplete="off" placeholder="<?= $e($S['palette.ph'] ?? '') ?>">
-        <ul data-palette-list></ul>
+        <ul data-palette-list data-lenis-prevent></ul>
         <p class="palette-foot"><kbd>↑</kbd><kbd>↓</kbd> <?= $s('palette.nav') ?> · <kbd>↵</kbd> <?= $s('palette.go') ?> · <kbd>Esc</kbd></p>
     </div>
 </div>

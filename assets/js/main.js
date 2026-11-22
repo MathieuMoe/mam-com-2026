@@ -120,8 +120,12 @@ document.addEventListener('click', (e) => {
 const nav = $('.nav');
 let lastY = scrollY, activeSection = 'top';
 addEventListener('scroll', () => {
-    nav.classList.toggle('is-hidden', !menuOpen && scrollY > lastY && scrollY > 500);
-    lastY = scrollY;
+    const y = scrollY, d = y - lastY;
+    if (Math.abs(d) > 8) {   // hysteresis: ignore micro-jitter from smooth scroll / pins
+        nav.classList.toggle('is-hidden', !menuOpen && d > 0 && y > 500);
+        lastY = y;
+    }
+    if (y < 120) nav.classList.remove('is-hidden');
     $('.progress').style.transform = `scaleX(${scrollY / Math.max(1, document.documentElement.scrollHeight - innerHeight)})`;
 }, { passive: true });
 const nowN = $('[data-now-n]'), nowT = $('[data-now-t]'), nowWrap = $('.nav-now');
@@ -189,6 +193,12 @@ const openCv = () => { window.open(LINKS.cv, '_blank', 'noopener'); };
             li.append(Object.assign(document.createElement('small'), { textContent: hint }));
             list.append(li);
         });
+        const cur = list.children[sel];
+        if (cur) {   // keep the selected row in view (arrow keys)
+            const top = cur.offsetTop, bot = top + cur.offsetHeight;
+            if (top < list.scrollTop + 8) list.scrollTop = top - 8;
+            else if (bot > list.scrollTop + list.clientHeight - 8) list.scrollTop = bot - list.clientHeight + 8;
+        }
     };
     const open = () => { pal.hidden = false; input.value = ''; sel = 0; render(); lenis?.stop(); setTimeout(() => input.focus(), 20); track('palette_open'); };
     const close = () => { pal.hidden = true; if (!menuOpen) lenis?.start(); };
@@ -379,7 +389,7 @@ async function intro() {
         .to('.hero [data-in]', { opacity: 1, y: 0, duration: 1.1, stagger: 0.08 }, '-=1.2')
         .from('.sticker', { scale: 0, rotate: () => gsap.utils.random(-50, 50), duration: 1.1, ease: 'back.out(1.8)', stagger: 0.07 }, '-=1.1')
         .from('.hero-gl', { opacity: 0, scale: 1.15, duration: 2, ease: 'power2.out' }, '-=1.8')
-        .from('.nav', { yPercent: -150, duration: 1 }, '-=1.6');
+        .from('.nav', { y: -110, duration: 1, clearProps: 'all' }, '-=1.6');
 }
 async function animations() {
     if (!motion) return;
