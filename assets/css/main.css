@@ -929,8 +929,19 @@ kbd { font: 600 .72em var(--mono); padding: .1em .45em; border-radius: 6px; bord
     .method-pin { height: auto; min-height: 0; }
     .cube-scene { height: 360px; }
 }
+/* never a horizontal scrollbar (tilted marquee, 3D cards…); clip keeps position: sticky working */
+html, body { overflow-x: clip; }
+@supports not (overflow: clip) { body { overflow-x: hidden; } }
 @media (max-width: 760px) {
     .status-pill span, .langs, .logo-word { display: none; }
+    /* mobile header: menu button is just the round icon, tools tighter */
+    .menu-btn { padding: 0 6px; gap: 0; width: 40px; justify-content: center; }
+    .menu-btn-t { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+    .menu-btn-i { width: 30px; height: 30px; }
+    .nav-tools { gap: .35rem; margin-left: auto; }
+    .nav { padding-right: .5rem; }
+    .kbd-btn { display: none; }
+    .mi-t { font-size: clamp(1.4rem, min(8vw, 5.2vh), 2.4rem); }
     .ls-btn svg { display: none; }
     .status-pill { padding: .5rem; }
     .nav { padding-left: .9rem; }

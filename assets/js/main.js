@@ -483,8 +483,8 @@ async function animations() {
     });
     ScrollTrigger.create({ trigger: '.marquee', start: 'top bottom', end: 'bottom top', onUpdate: (s) => rows.forEach((tw) => gsap.to(tw, { timeScale: (1 + Math.min(6, Math.abs(s.getVelocity()) / 300)) * (s.direction || 1), duration: 0.3, overwrite: true })) });
     // marquee: the two ribbons swing in 3D (opposite directions) as they cross the screen
-    if (wide) $$('.marquee-row').forEach((row, i) => {
-        const k = i ? -1 : 1;
+    $$('.marquee-row').forEach((row, i) => {
+        const k = (i ? -1 : 1) * (mobile ? 0.6 : 1);
         gsap.timeline({ scrollTrigger: { trigger: '.marquee', start: 'top bottom', end: 'bottom top', scrub: 1 } })
             .fromTo(row, { '--mrx': `${58 * k}deg`, '--mry': `${-16 * k}deg`, '--mz': '-260px', '--my': `${60 * k}px` },
                          { '--mrx': '0deg', '--mry': '0deg', '--mz': '0px', '--my': '0px', ease: 'power2.out', duration: 1 })
@@ -494,6 +494,7 @@ async function animations() {
     scroll3d();
     journey();
     cube();
+    touchMotion();
     // skill bars fill when visible
     $$('.eq').forEach((g) => gsap.fromTo($$('em', g), { '--p': 0 }, { '--p': 1, duration: 1.4, ease: 'expo.out', stagger: 0.05, scrollTrigger: { trigger: g, start: 'top 88%' } }));
     // footer columns rise in
@@ -526,9 +527,14 @@ function scroll3d() {
     const ex = $('[data-ex3d]');
     if (ex) gsap.fromTo(ex, { '--ex': '38deg', '--ey': '-38deg' }, { '--ex': '6deg', '--ey': '14deg', ease: 'none', scrollTrigger: { trigger: '#eduverse', start: 'top bottom', end: 'bottom top', scrub: 1 } });
     const rig = $('[data-app-rig]');
-    if (rig && wide) gsap.fromTo(rig, { '--sry': '-30deg', '--srx': '16deg' }, { '--sry': '14deg', '--srx': '-8deg', ease: 'none', scrollTrigger: { trigger: '#eduverse', start: 'top bottom', end: 'bottom top', scrub: 1 } });
+    if (rig) gsap.fromTo(rig, { '--sry': '-30deg', '--srx': '16deg' }, { '--sry': '14deg', '--srx': '-8deg', ease: 'none', scrollTrigger: { trigger: '#eduverse', start: 'top bottom', end: 'bottom top', scrub: 1 } });
     // Nabbü: the screenshots slide while the gallery is pinned
     const show = $('[data-nb-show]'), stage = $('[data-nb-stage]');
+    if (show && stage?._setPos && !wide) {
+        const n = stage._count;
+        ScrollTrigger.create({ trigger: show, start: 'top 80%', end: 'bottom 20%', scrub: 0.8,
+            onUpdate: (self) => stage._setPos(self.progress * (n - 1)) });
+    }
     if (show && stage?._setPos && wide) {
         const n = stage._count;
         stage.classList.add('is-scrub');
@@ -750,6 +756,73 @@ function journey() {
     ScrollTrigger.create({ trigger: '.journey-pin', pin: true, start: 'top top', end: () => '+=' + innerHeight * (n - 1) * 0.6, scrub: 1, onUpdate: (s) => render(s.progress) });
 }
 
+/* ---------------- Touch screens: the effects that follow the mouse on desktop follow the scroll / the finger ---------------- */
+function touchMotion() {
+    if (finePointer) return;
+    // journey cards (static list on phones) flip in one by one
+    if (mobile) $$('[data-jcard]').forEach((c) => gsap.from(c, { rotateX: -55, y: 70, scale: 0.92, transformPerspective: 900, transformOrigin: '50% 0%', ease: 'power3.out', duration: 1,
+        scrollTrigger: { trigger: c, start: 'top 92%', end: 'top 60%', scrub: 0.6 } }));
+    // method cube: turns with the scroll instead of on a timer
+    if (!wide) {
+        cubeAuto = false;
+        ScrollTrigger.create({ trigger: '#method', start: 'top 70%', end: 'bottom 30%', scrub: 0.6, onUpdate: (s) => {
+            const raw = s.progress * 3, eased = Math.floor(raw) + gsap.parseEase('power2.inOut')(raw - Math.floor(raw));
+            cubeEl.style.transition = 'none';
+            cubeEl.style.setProperty('--cx', `${eased * 90}deg`);
+            setStep(clamp(Math.round(raw), 0, 3));
+        } });
+    }
+    // hero letters: a soft wave runs through the name, the finger takes over when it touches it
+    let touch = null;
+    addEventListener('touchmove', (e) => { touch = { x: e.touches[0].clientX, y: e.touches[0].clientY, t: performance.now() }; }, { passive: true });
+    addEventListener('touchstart', (e) => { touch = { x: e.touches[0].clientX, y: e.touches[0].clientY, t: performance.now() }; }, { passive: true });
+    const title = $('.hero-title');
+    const wave = (now) => {
+        if (heroVisible && title && chars.length) {
+            const tr = title.getBoundingClientRect();
+            const live = touch && now - touch.t < 1400;
+            const px = live ? touch.x : tr.left + (Math.sin(now / 1500) * 0.5 + 0.5) * tr.width;
+            const py = live ? touch.y : tr.top + tr.height * (0.5 + Math.sin(now / 2300) * 0.3);
+            chars.forEach((c) => {
+                const r = c.getBoundingClientRect();
+                const d = Math.hypot(px - (r.left + r.width / 2), py - (r.top + r.height / 2));
+                c.style.setProperty('--w', String(Math.round(lerp(800, 250, clamp(d / (innerWidth * 0.45), 0, 1)))));
+            });
+        }
+        requestAnimationFrame(wave);
+    };
+    requestAnimationFrame(wave);
+    // 3D tilt, holographic shine and the app rig follow the position of each card on the screen
+    const items = [
+        ...$$('[data-tilt]').map((el) => ({ el, kind: 'tilt' })),
+        ...$$('[data-holo]').map((el) => ({ el, kind: 'holo' })),
+        ...$$('[data-stack-card] .sc-visual').map((el) => ({ el, kind: 'visual' })),
+        ...$$('[data-ex3d]').map((el) => ({ el, kind: 'ex' })),
+    ];
+    const seen = new Set();
+    const io = new IntersectionObserver((ens) => ens.forEach((en) => en.isIntersecting ? seen.add(en.target) : seen.delete(en.target)), { rootMargin: '10% 0px' });
+    items.forEach(({ el }) => io.observe(el));
+    let ticking = false;
+    const paintTilt = () => {
+        ticking = false;
+        const vh = innerHeight, t = performance.now() / 1000;
+        items.forEach(({ el, kind }, i) => {
+            if (!seen.has(el)) return;
+            const r = el.getBoundingClientRect();
+            const p = clamp(((r.top + r.height / 2) - vh / 2) / (vh / 2), -1, 1);   // -1 top … 1 bottom
+            const side = Math.sin(i * 1.7 + p * 2);
+            if (kind === 'tilt') { el.style.setProperty('--rx', `${p * 9}deg`); el.style.setProperty('--ry', `${side * 6}deg`); el.style.setProperty('--mx', `${50 + side * 40}%`); el.style.setProperty('--my', `${50 + p * 45}%`); }
+            else if (kind === 'holo') { el.style.setProperty('--hx', `${50 + side * 45}%`); el.style.setProperty('--hy', `${50 + p * 50}%`); el.style.setProperty('--gx', `${50 - p * 40}%`); el.style.setProperty('--gy', `${50 + side * 30}%`); }
+            else if (kind === 'visual') { el.style.setProperty('--vx', `${p * 12}deg`); el.style.setProperty('--vy', `${side * 12}deg`); }
+            else if (kind === 'ex') { el.style.setProperty('--mey', `${Math.sin(t * 0.6) * 14}deg`); el.style.setProperty('--mex', `${p * -10}deg`); }
+        });
+    };
+    const req = () => { if (!ticking) { ticking = true; requestAnimationFrame(paintTilt); } };
+    addEventListener('scroll', req, { passive: true });
+    setInterval(req, 120);   // keeps the EduVerse title gently alive even without scrolling
+    req();
+}
+
 /* ---------------- Method: a 3D cube turns from one step to the next ---------------- */
 const cubeEl = $('[data-cube]'), mSteps = $$('[data-mstep]');
 const setStep = (k) => mSteps.forEach((li, i) => li.classList.toggle('is-on', i === k));
@@ -773,9 +846,10 @@ mSteps.forEach((li, i) => li.addEventListener('click', () => {
     cubeEl.style.transition = 'transform 1s cubic-bezier(.22,1,.36,1)';
     cubeEl.style.setProperty('--cx', `${i * 90}deg`); setStep(i);
 }));
+let cubeAuto = true;
 if (!wide || !motion) {
     let k = 0;
-    setInterval(() => { if (document.hidden) return; k = (k + 1) % 4; cubeEl.style.transition = 'transform 1.2s cubic-bezier(.22,1,.36,1)'; cubeEl.style.setProperty('--cx', `${k * 90}deg`); setStep(k); }, 3200);
+    setInterval(() => { if (document.hidden || !cubeAuto) return; k = (k + 1) % 4; cubeEl.style.transition = 'transform 1.2s cubic-bezier(.22,1,.36,1)'; cubeEl.style.setProperty('--cx', `${k * 90}deg`); setStep(k); }, 3200);
 }
 
 /* ---------------- Toolbox: 3D constellation, gauge, equalizer ---------------- */
