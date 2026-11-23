@@ -165,7 +165,7 @@ return [
     ],
     'privacy' => [
         'title' => 'Privacy',
-        'text' => 'This website uses no tracking cookies and no third-party services. To know how many people visit it, I keep anonymous statistics: page, language, where the visit comes from, device type and approximate country (from the browser time zone). The IP address is never stored: it is turned into an anonymous code that changes every day. Messages from the form and names given when downloading the CV are only used to reply to you and can be deleted on request at mathieu.moreau80@gmail.com.',
+        'text' => 'This website uses no cookies. To understand how it is used, I keep anonymous statistics: page, language, where the visit comes from, device and screen size, approximate city and network (looked up once with the ipwho.is geolocation service), the sections viewed and the time spent on each, and where people click or move the mouse (relative positions only, never what you type). The IP address is never stored: it is turned into an anonymous code that changes every day. If your browser sends “Do Not Track” or “Global Privacy Control”, nothing is recorded. Questions to the assistant are processed by Google Gemini. Messages from the form and names given when downloading the CV are only used to reply to you and can be deleted on request at mathieu.moreau80@gmail.com.',
     ],
     'js' => [
         'sending' => 'Sending…',

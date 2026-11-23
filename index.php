@@ -212,12 +212,13 @@ header('Referrer-Policy: strict-origin-when-cross-origin');
         <div class="menu-stage" aria-hidden="true">
             <div class="menu-cyl" data-menu-cyl style="--n:<?= count($sections) ?>">
                 <?php foreach ($sections as $i => $id): ?>
-                <div class="mc" style="--k:<?= $i ?>;--c:var(--s<?= ($i % 7) + 1 ?>)">
+                <a href="#<?= $id ?>" class="mc" data-mc="<?= $i ?>" tabindex="-1" style="--k:<?= $i ?>;--c:var(--s<?= ($i % 7) + 1 ?>)">
                     <span class="mc-n"><?= sprintf('%02d', $i + 1) ?></span>
                     <span class="mc-glyph"><?= ['◐', '✦', '🎓', '◆', '▦', '▲', '➝', '⬡', '✺', '❖', '✉'][$i] ?></span>
                     <b><?= $e($X['sec'][$id]) ?></b>
                     <small><?= $e($X['secd'][$id]) ?></small>
-                </div>
+                    <span class="mc-go" aria-hidden="true">→</span>
+                </a>
                 <?php endforeach; ?>
             </div>
             <p class="menu-hint"><?= $e($X['menu_hint']) ?></p>

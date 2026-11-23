@@ -15,7 +15,10 @@ const finePointer = matchMedia('(hover: hover) and (pointer: fine)').matches;
 const mobile = matchMedia('(max-width: 760px)').matches;
 const wide = matchMedia('(min-width: 1101px)').matches;
 const { gsap, ScrollTrigger, SplitText, Lenis } = window;
-const motion = !reduced && !!gsap && !!ScrollTrigger && !!SplitText;
+const QS = new URLSearchParams(location.search);
+const motion = !reduced && !!gsap && !!ScrollTrigger && !!SplitText && !QS.has('nomotion');
+// Do Not Track / Global Privacy Control / ?notrack (used by the admin heat-map preview): no statistics at all
+const noTrack = navigator.doNotTrack === '1' || window.doNotTrack === '1' || navigator.globalPrivacyControl === true || QS.has('notrack');
 const clamp = (v, a, b) => Math.min(b, Math.max(a, v));
 const lerp = (a, b, t) => a + (b - a) * t;
 root.classList.add('js', motion ? 'motion' : 'no-motion');
@@ -32,8 +35,12 @@ const api = async (path, data) => {
     if (!res.ok || json.ok === false) throw Object.assign(new Error(json.error || 'error'), { status: res.status });
     return json;
 };
-const beacon = (data) => navigator.sendBeacon?.(`${BASE}/api/track.php`, new Blob([JSON.stringify({ ...data, lang, for: forSlug, session })], { type: 'application/json' }));
-const track = (name, value = '') => beacon({ type: 'event', name, value: String(value).slice(0, 120) });
+const beacon = (data) => !noTrack && navigator.sendBeacon?.(`${BASE}/api/track.php`, new Blob([JSON.stringify({ ...data, lang, for: forSlug, session })], { type: 'application/json' }));
+const J = { seq: [], ev: [], clicks: [], moves: {}, n: 0, dirty: false, t0: Date.now() };   // anonymous journey of this visit
+const track = (name, value = '') => {
+    if (name !== 'section_view' && J.ev.length < 80) { J.ev.push([Math.round((Date.now() - J.t0) / 1000), name, String(value).slice(0, 60)]); J.dirty = true; }
+    beacon({ type: 'event', name, value: String(value).slice(0, 120) });
+};
 let toastTimer;
 const toast = (msg) => {
     const el = $('[data-toast]');
@@ -81,7 +88,16 @@ const setCyl = (k) => {
     spin += d; menuCur = k;
     cyl?.style.setProperty('--ry', `${-spin * 360 / n}deg`);
     menuItems.forEach((a, i) => a.classList.toggle('is-on', i === k));
+    menuCards.forEach((c, i) => c.classList.toggle('is-front', i === k));
 };
+const menuCards = $$('[data-mc]');
+// cards: the front one opens its section (handled by the global #anchor click), a side card turns to the front first
+cyl?.addEventListener('click', (e) => {
+    const c = e.target.closest('[data-mc]');
+    if (!c) return;
+    const i = +c.dataset.mc;
+    if (i !== menuCur) { e.preventDefault(); e.stopPropagation(); setCyl(i); }
+}, true);
 // wheel / trackpad / arrows inside the open menu turn the 3D cards and walk the list
 let wheelAcc = 0, wheelLock = 0;
 const menuStep = (dir) => {
@@ -169,6 +185,7 @@ const secIo = new IntersectionObserver((entries) => entries.forEach((en) => {
     const id = en.target.id;
     if (id !== activeSection) {
         activeSection = id;
+        journeyEnter(id);
         nowWrap.classList.add('is-swap');
         requestAnimationFrame(() => {
             nowN.textContent = numbers[id] || '';
@@ -957,10 +974,65 @@ const params = new URLSearchParams(location.search);
 let maxScroll = 0, left = false;
 const started = Date.now();
 addEventListener('scroll', () => { maxScroll = Math.max(maxScroll, Math.min(100, Math.round((scrollY + innerHeight) / document.documentElement.scrollHeight * 100))); }, { passive: true });
-api('track', { type: 'pageview', path: location.pathname, referrer: document.referrer && !document.referrer.startsWith(location.origin) ? document.referrer : '', utm: params.get('utm_source') || params.get('ref') || '', tz: Intl.DateTimeFormat().resolvedOptions().timeZone || '' }).catch(() => {});
+if (!noTrack) api('track', { type: 'pageview', path: location.pathname, referrer: document.referrer && !document.referrer.startsWith(location.origin) ? document.referrer : '', utm: params.get('utm_source') || params.get('ref') || '', tz: Intl.DateTimeFormat().resolvedOptions().timeZone || '', screen: `${screen.width}x${screen.height}` }).catch(() => {});
 const leave = () => { if (left) return; left = true; beacon({ type: 'leave', seconds: Math.round((Date.now() - started) / 1000), scroll: maxScroll }); };
-addEventListener('pagehide', leave);
-document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') leave(); });
+
+/* Journey (sections in order + time in each), click map and mouse map: anonymous, relative coordinates only */
+let secT0 = Date.now(), visible = document.visibilityState === 'visible';
+const closeSeg = () => { const last = J.seq[J.seq.length - 1]; if (last && visible) last[1] += Math.round((Date.now() - secT0) / 1000); secT0 = Date.now(); };
+function journeyEnter(id) {
+    closeSeg();
+    const last = J.seq[J.seq.length - 1];
+    if (!last || last[0] !== id) { if (J.seq.length < 40) J.seq.push([id, 0]); J.dirty = true; }
+}
+journeyEnter(activeSection);
+const zoneOf = (el) => {
+    const z = el?.closest?.('[data-menu-panel], main > section[id], body > section[id], footer');
+    if (!z) return null;
+    return { el: z, id: z.matches('[data-menu-panel]') ? 'menu' : z.tagName === 'FOOTER' ? 'footer' : z.id };
+};
+let recent = [];
+document.addEventListener('click', (e) => {
+    if (noTrack) return;
+    const z = zoneOf(e.target);
+    if (!z) return;
+    const r = z.el.getBoundingClientRect();
+    const x = Math.round(e.clientX / innerWidth * 1000), y = clamp(Math.round((e.clientY - r.top) / Math.max(1, r.height) * 1000), 0, 1000);
+    const ui = e.target.closest('a, button, input, textarea, select, label, summary, [role="button"], [data-tilt], [data-card], [data-mc], [tabindex], canvas, .sticker, [data-nb-show], [data-track]');
+    const now = Date.now();
+    recent = recent.filter((c) => now - c.t < 800 && Math.hypot(c.x - e.clientX, c.y - e.clientY) < 40);
+    recent.push({ t: now, x: e.clientX, y: e.clientY });
+    const kind = recent.length >= 3 ? 'rage' : ui ? 'ui' : 'dead';
+    const label = ui && !/^(INPUT|TEXTAREA|SELECT)$/.test(ui.tagName) ? (ui.getAttribute('aria-label') || ui.dataset.track || ui.textContent || ui.tagName).trim().replace(/\s+/g, ' ').slice(0, 60) : (ui ? ui.tagName.toLowerCase() : '');
+    J.n++;
+    if (J.clicks.length < 40) J.clicks.push([z.id, x, y, innerWidth, kind, label]);
+    J.dirty = true;
+}, { capture: true, passive: true });
+let moveT = 0;
+if (finePointer) addEventListener('pointermove', (e) => {
+    if (noTrack || e.timeStamp - moveT < 220) return;
+    moveT = e.timeStamp;
+    const z = zoneOf(e.target);
+    if (!z) return;
+    const r = z.el.getBoundingClientRect();
+    const cx = clamp(Math.floor(e.clientX / innerWidth * 20), 0, 19), cy = clamp(Math.floor((e.clientY - r.top) / Math.max(1, r.height) * 20), 0, 19);
+    const m = (J.moves[z.id] ||= {});
+    m[cy * 20 + cx] = (m[cy * 20 + cx] || 0) + 1;
+    J.dirty = true;
+}, { passive: true });
+const flushJourney = () => {
+    if (noTrack) return;
+    closeSeg();
+    if (!J.dirty) return;
+    beacon({ type: 'journey', seq: J.seq, ev: J.ev, clicks: J.clicks, moves: J.moves, nclicks: J.n, seconds: Math.round((Date.now() - started) / 1000), scroll: maxScroll, vp: `${innerWidth}x${innerHeight}` });
+    J.clicks = []; J.moves = {}; J.dirty = false;
+};
+setInterval(() => { if (document.visibilityState === 'visible') flushJourney(); }, 15000);
+addEventListener('pagehide', () => { flushJourney(); leave(); });
+document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'hidden') { flushJourney(); visible = false; leave(); }
+    else { visible = true; secT0 = Date.now(); }
+});
 document.addEventListener('click', (e) => { const a = e.target.closest('[data-track]'); if (a) track(a.dataset.track, a.dataset.value || ''); });
 $('[data-privacy]').addEventListener('click', () => $('[data-privacy-dialog]').showModal());
 console.log('%c Mathieu Moreau %c Spectrum · Ctrl + K → ', 'background:linear-gradient(90deg,#FF3D6E,#FFD21F,#34E089,#1EC8FF,#B65CFF);color:#111;font-weight:700;padding:4px 8px;border-radius:4px 0 0 4px', 'background:#111;color:#F4F1EA;padding:4px 8px;border-radius:0 4px 4px 0');

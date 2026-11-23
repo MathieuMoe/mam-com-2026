@@ -208,6 +208,13 @@ kbd { font: 600 .72em var(--mono); padding: .1em .45em; border-radius: 6px; bord
 .mc { position: absolute; inset: 0; padding: 1.4rem; border-radius: 26px; display: flex; flex-direction: column; gap: .4rem; color: #fff; backface-visibility: hidden;
     background: radial-gradient(120% 90% at 20% 0%, color-mix(in oklab, var(--c) 85%, #fff), var(--c) 45%, color-mix(in oklab, var(--c) 55%, #000));
     box-shadow: 0 30px 60px -30px #000c, inset 0 0 0 1px #ffffff40; transform: rotateY(calc(var(--k) * 360deg / var(--n, 10))) translateZ(375px); }
+.mc { cursor: pointer; transition: box-shadow .4s, filter .4s; }
+.mc:not(.is-front) { filter: brightness(.82); }
+.mc:not(.is-front):hover { filter: brightness(1); }
+.mc.is-front:hover { box-shadow: 0 40px 70px -30px #000c, inset 0 0 0 2px #ffffffb0, 0 0 50px -6px var(--c); }
+.mc-go { position: absolute; right: 1.2rem; bottom: 1.1rem; display: grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; background: #ffffff2e; font-size: 1.1rem; opacity: 0; scale: .6; transition: opacity .35s, scale .45s var(--back), background-color .3s; }
+.mc.is-front .mc-go { opacity: 1; scale: 1; }
+.mc.is-front:hover .mc-go { background: #fff; color: #111; }
 .mc-n { font: 700 .8rem var(--mono); opacity: .8; }
 .mc-glyph { font-size: 5rem; line-height: 1; margin: auto 0; text-shadow: 0 10px 30px #0004; }
 .mc b { font-size: 1.7rem; letter-spacing: -.04em; } .mc small { opacity: .85; }

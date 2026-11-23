@@ -114,3 +114,34 @@ h1 small { font-size: .85rem; font-weight: 400; margin-left: .6rem; }
 @media (max-width: 1000px) { .grid2, .urls { grid-template-columns: 1fr; } .add { grid-template-columns: 1fr 1fr; } .grid3 .wide2 { grid-column: auto; } }
 .kpis { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
 .kpis b { font-size: clamp(1.35rem, 1.9vw, 2rem); white-space: nowrap; }
+/* v3 analytics */
+.card.warn, .jr-stats .warn b { color: #ff8a5c; } .kpis .card.warn { border-color: #ff8a5c55; }
+.filters { display: inline-flex; flex-wrap: wrap; margin: 0 0 1rem; }
+.filters a em { font-style: normal; font-size: .7rem; padding: 0 .35rem; border-radius: 99px; background: #ffffff1a; margin-left: .2rem; }
+.jr { display: grid; gap: .9rem; }
+.jr header { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; align-items: flex-start; }
+.jr-who { display: flex; gap: .8rem; align-items: flex-start; } .jr-flag { font-size: 1.9rem; line-height: 1; }
+.jr-who b { font-size: 1.05rem; } .jr-who small { display: block; color: var(--muted); font-size: .8rem; margin-top: .15rem; }
+.jr-stats { display: flex; gap: 1.1rem; align-items: center; flex-wrap: wrap; }
+.jr-stats span { display: grid; text-align: center; } .jr-stats b { font: 600 1.05rem "JetBrains", monospace; } .jr-stats small { font-size: .65rem; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.jr-stats time { font: .75rem "JetBrains", monospace; color: var(--muted); }
+.score { width: 54px; height: 54px; border-radius: 50%; place-content: center; background: conic-gradient(var(--lime) calc(var(--s) * 1%), #ffffff14 0); position: relative; }
+.score::before { content: ""; position: absolute; inset: 5px; border-radius: 50%; background: var(--card, #15151d); }
+.score > * { position: relative; } .score small { font-size: .5rem !important; }
+.jr-path { display: flex; gap: 3px; min-height: 42px; }
+.jr-path span { flex-basis: 0; min-width: 44px; display: grid; align-content: center; padding: .25rem .45rem; border-radius: 8px; background: linear-gradient(135deg, #c8ff3d22, #8b5cf622); border: 1px solid #ffffff14; overflow: hidden; }
+.jr-path b { font-size: .72rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; } .jr-path small { font: .62rem "JetBrains", monospace; color: var(--muted); }
+.jr details summary { cursor: pointer; color: var(--muted); font-size: .85rem; }
+.jr-ev { margin: .6rem 0 0; padding-left: 0; list-style: none; columns: 2; column-gap: 2rem; font-size: .84rem; }
+.jr-ev li { break-inside: avoid; padding: .15rem 0; } .jr-ev time { font: .72rem "JetBrains", monospace; color: var(--lime); margin-right: .3rem; } .jr-ev small { color: var(--muted); }
+.mapcard { padding: 0; overflow: hidden; } #map { height: min(62vh, 560px); background: #0b0b10; }
+.leaflet-popup-content-wrapper, .leaflet-popup-tip { background: #15151d; color: #eee; } .leaflet-container a { color: var(--lime); }
+.orgs { width: 100%; border-collapse: collapse; font-size: .86rem; } .orgs th, .orgs td { text-align: left; padding: .4rem .3rem; border-bottom: 1px dashed var(--line); }
+.orgs tr.co td:first-child { color: var(--lime); font-weight: 600; }
+.hm { display: grid; grid-template-columns: 2.4rem repeat(24, 1fr); gap: 3px; align-items: center; font: .62rem "JetBrains", monospace; color: var(--muted); }
+.hm em { font-style: normal; text-align: center; } .hm i { aspect-ratio: 1; border-radius: 3px; background: color-mix(in oklab, var(--lime) calc(var(--a) * 100%), #ffffff0d); }
+.heat-grid { grid-template-columns: 1.7fr 1fr; align-items: start; } .heat-grid > div { display: grid; gap: 1rem; }
+.heat-stage { position: relative; overflow: hidden; border-radius: 12px; background: #0b0b10; min-height: 200px; }
+.heat-stage iframe { position: absolute; left: 0; top: 0; width: 1440px; border: 0; transform-origin: 0 0; pointer-events: none; filter: saturate(.6) brightness(.75); }
+.heat-stage canvas { position: absolute; left: 0; top: 0; width: 100%; pointer-events: none; }
+@media (max-width: 1000px) { .heat-grid { grid-template-columns: 1fr; } .jr-ev { columns: 1; } }

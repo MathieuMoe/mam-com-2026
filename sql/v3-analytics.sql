@@ -1,0 +1,15 @@
+-- v3 analytics (location, journeys, click & mouse maps).
+-- NOT required: the site creates these automatically the first time (app/analytics.php).
+-- Only run it by hand in phpMyAdmin if the automatic upgrade fails.
+USE mamcomwmat;
+ALTER TABLE visits ADD COLUMN city VARCHAR(80) NULL, ADD COLUMN region VARCHAR(80) NULL, ADD COLUMN lat DECIMAL(6,2) NULL,
+  ADD COLUMN lon DECIMAL(6,2) NULL, ADD COLUMN org VARCHAR(120) NULL, ADD COLUMN screen VARCHAR(11) NULL;
+CREATE TABLE IF NOT EXISTS v2_geo_cache (ip_hash CHAR(64) NOT NULL PRIMARY KEY, city VARCHAR(80) NULL, region VARCHAR(80) NULL, country CHAR(2) NULL,
+  lat DECIMAL(6,2) NULL, lon DECIMAL(6,2) NULL, org VARCHAR(120) NULL, created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE IF NOT EXISTS v2_journeys (session_id VARCHAR(64) NOT NULL PRIMARY KEY, seconds INT NOT NULL DEFAULT 0, max_scroll INT NOT NULL DEFAULT 0,
+  sections INT NOT NULL DEFAULT 0, clicks INT NOT NULL DEFAULT 0, rage INT NOT NULL DEFAULT 0, dead INT NOT NULL DEFAULT 0, exit_section VARCHAR(32) NULL, data TEXT NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP, INDEX idx_journeys_upd (updated_at)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE IF NOT EXISTS v2_clicks (id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY, session_id VARCHAR(64) NOT NULL, section VARCHAR(32) NOT NULL, x SMALLINT NOT NULL, y SMALLINT NOT NULL,
+  vw SMALLINT NOT NULL DEFAULT 0, kind VARCHAR(8) NOT NULL DEFAULT 'ui', target VARCHAR(80) NULL, created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  INDEX idx_clicks_sec (section, created_at)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+CREATE TABLE IF NOT EXISTS v2_moves (section VARCHAR(32) NOT NULL, cell SMALLINT NOT NULL, n INT NOT NULL DEFAULT 0, PRIMARY KEY (section, cell)) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

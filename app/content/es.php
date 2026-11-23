@@ -165,7 +165,7 @@ return [
     ],
     'privacy' => [
         'title' => 'Privacidad',
-        'text' => 'Esta web no usa cookies de seguimiento ni servicios de terceros. Para saber cuántas personas la visitan guardo estadísticas anónimas: página, idioma, origen de la visita, tipo de dispositivo y país aproximado (según la zona horaria del navegador). La dirección IP nunca se guarda: se transforma en un código anónimo que cambia cada día. Los mensajes del formulario y los nombres indicados al descargar el CV solo se usan para responderte y se pueden borrar a petición escribiendo a mathieu.moreau80@gmail.com.',
+        'text' => 'Esta web no usa cookies. Para entender cómo se usa guardo estadísticas anónimas: página, idioma, origen de la visita, dispositivo y tamaño de pantalla, ciudad y red aproximadas (consultadas una vez al servicio de geolocalización ipwho.is), las secciones vistas y el tiempo en cada una, y dónde se hace clic o se mueve el ratón (solo posiciones relativas, nunca lo que escribes). La dirección IP nunca se guarda: se transforma en un código anónimo que cambia cada día. Si tu navegador envía «Do Not Track» o «Global Privacy Control», no se registra nada. Las preguntas al asistente se procesan con Google Gemini. Los mensajes del formulario y los nombres indicados al descargar el CV solo se usan para responderte y se pueden borrar a petición escribiendo a mathieu.moreau80@gmail.com.',
     ],
     'js' => [
         'sending' => 'Enviando…',

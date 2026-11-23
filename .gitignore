@@ -15,3 +15,6 @@ node_modules/
 
 # ---- Private backups ----
 /app/backup-antes-spectrum/
+
+# analytics schema marker (created on the server)
+/app/.schema-v*

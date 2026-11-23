@@ -165,7 +165,7 @@ return [
     ],
     'privacy' => [
         'title' => 'Confidentialité',
-        'text' => 'Ce site n’utilise aucun cookie de suivi ni service tiers. Pour savoir combien de personnes le visitent, je garde des statistiques anonymes : page, langue, provenance de la visite, type d’appareil et pays approximatif (d’après le fuseau horaire du navigateur). L’adresse IP n’est jamais enregistrée : elle est transformée en un code anonyme qui change chaque jour. Les messages du formulaire et les noms indiqués lors du téléchargement du CV servent uniquement à vous répondre et peuvent être supprimés sur demande à mathieu.moreau80@gmail.com.',
+        'text' => 'Ce site n’utilise aucun cookie. Pour comprendre comment il est utilisé, je garde des statistiques anonymes : page, langue, provenance de la visite, appareil et taille d’écran, ville et réseau approximatifs (consultés une fois auprès du service de géolocalisation ipwho.is), les sections vues et le temps passé sur chacune, et où l’on clique ou déplace la souris (positions relatives uniquement, jamais ce que vous écrivez). L’adresse IP n’est jamais enregistrée : elle est transformée en un code anonyme qui change chaque jour. Si votre navigateur envoie « Do Not Track » ou « Global Privacy Control », rien n’est enregistré. Les questions à l’assistant sont traitées par Google Gemini. Les messages du formulaire et les noms indiqués lors du téléchargement du CV servent uniquement à vous répondre et peuvent être supprimés sur demande à mathieu.moreau80@gmail.com.',
     ],
     'js' => [
         'sending' => 'Envoi…',
