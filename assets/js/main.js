@@ -73,11 +73,44 @@ const goTo = (target) => {
 /* ---------------- Full-screen 3D menu ---------------- */
 const menuBtn = $('[data-menu]'), menu = $('[data-menu-panel]'), cyl = $('[data-menu-cyl]');
 const menuItems = $$('[data-menu-item]');
-let menuOpen = false;
+let menuOpen = false, menuCur = 0, spin = 0;
 const setCyl = (k) => {
-    cyl?.style.setProperty('--ry', `${-k * 360 / menuItems.length}deg`);
+    const n = menuItems.length;
+    // shortest way round, so the cylinder keeps turning in the same direction when wrapping 11 → 1
+    let d = k - menuCur; if (d > n / 2) d -= n; if (d < -n / 2) d += n;
+    spin += d; menuCur = k;
+    cyl?.style.setProperty('--ry', `${-spin * 360 / n}deg`);
     menuItems.forEach((a, i) => a.classList.toggle('is-on', i === k));
 };
+// wheel / trackpad / arrows inside the open menu turn the 3D cards and walk the list
+let wheelAcc = 0, wheelLock = 0;
+const menuStep = (dir) => {
+    const n = menuItems.length, k = (menuCur + dir + n) % n;
+    setCyl(k);
+    menuItems[k].focus({ preventScroll: true });
+    menuItems[k].scrollIntoView({ block: 'nearest' });
+};
+menu?.addEventListener('wheel', (e) => {
+    if (!menuOpen) return;
+    e.preventDefault();
+    wheelAcc += Math.abs(e.deltaY) > Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
+    const now = performance.now();
+    if (now < wheelLock || Math.abs(wheelAcc) < 40) return;
+    menuStep(wheelAcc > 0 ? 1 : -1);
+    wheelAcc = 0; wheelLock = now + 170;
+}, { passive: false });
+let touchY = null;
+menu?.addEventListener('touchstart', (e) => { touchY = e.touches[0].clientY; }, { passive: true });
+menu?.addEventListener('touchmove', (e) => {
+    if (touchY === null || !matchMedia('(min-width: 1001px)').matches) return;   // phones: normal list scroll
+    const dy = touchY - e.touches[0].clientY;
+    if (Math.abs(dy) > 40) { menuStep(dy > 0 ? 1 : -1); touchY = e.touches[0].clientY; }
+}, { passive: true });
+menu?.addEventListener('keydown', (e) => {
+    if (!menuOpen) return;
+    if (e.key === 'ArrowDown' || e.key === 'ArrowRight') { e.preventDefault(); menuStep(1); }
+    else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') { e.preventDefault(); menuStep(-1); }
+});
 const openMenu = () => {
     if (menuOpen) return;
     menuOpen = true;
