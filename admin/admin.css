@@ -145,3 +145,4 @@ h1 small { font-size: .85rem; font-weight: 400; margin-left: .6rem; }
 .heat-stage iframe { position: absolute; left: 0; top: 0; width: 1440px; border: 0; transform-origin: 0 0; pointer-events: none; filter: saturate(.6) brightness(.75); }
 .heat-stage canvas { position: absolute; left: 0; top: 0; width: 100%; pointer-events: none; }
 @media (max-width: 1000px) { .heat-grid { grid-template-columns: 1fr; } .jr-ev { columns: 1; } }
+.tiles-dark { filter: invert(1) hue-rotate(180deg) brightness(.85) contrast(.9) saturate(.4); }

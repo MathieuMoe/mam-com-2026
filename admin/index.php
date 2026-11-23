@@ -342,7 +342,7 @@ $hidden = fn(string $t) => '<input type="hidden" name="csrf" value="' . $csrf . 
     (() => {
         const pts = <?= json_encode(array_map(fn($p) => [(float)$p['lat'], (float)$p['lon'], (int)$p['v'], (int)$p['u'], trim(($p['city'] ?? '') . ', ' . ($p['region'] ?? '') . ' ' . ($p['country'] ?? ''), ', '), date('d/m H:i', strtotime($p['last'])), (string)$p['camp']], $pts), JSON_UNESCAPED_UNICODE) ?>;
         const map = L.map('map', { worldCopyJump: true, scrollWheelZoom: false }).setView([44, 2], 4);
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { maxZoom: 12, subdomains: 'abcd', attribution: '© OpenStreetMap · © CARTO' }).addTo(map);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 12, className: 'tiles-dark', attribution: '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a>' }).addTo(map);
         const esc = (t) => String(t).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
         const b = [];
         pts.forEach(([la, lo, v, u, name, last, camp]) => {
